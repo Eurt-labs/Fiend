@@ -9,4 +9,3 @@ crate-type = ["cdylib"]
 [dependencies]
 adblock = { git = "https://github.com/brave/adblock-rust.git" }
 jni = "0.21.1"
-lazy_static = "1.4.0"
