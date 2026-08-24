@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.android.application)
-    id("org.jetbrains.kotlin.plugin.compose")
+    alias(libs.plugins.compose.compiler)
+    alias(libs.plugins.rust.android)
 }
 
 android {
@@ -33,6 +34,19 @@ android {
     
     buildFeatures {
         compose = true
+    }
+}
+
+cargo {
+    module = "../rust_adblock"
+    libname = "rust_adblock"
+    targets = listOf("arm", "arm64", "x86", "x86_64")
+    profile = "release"
+}
+
+afterEvaluate {
+    tasks.withType(com.android.build.gradle.tasks.MergeSourceSetFolders::class.java).configureEach {
+        dependsOn("cargoBuild")
     }
 }
 
