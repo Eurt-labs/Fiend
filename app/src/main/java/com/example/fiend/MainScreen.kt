@@ -22,45 +22,98 @@ fun MainScreen(viewModel: PlayerViewModel = viewModel()) {
     val recommendations by viewModel.recommendations.collectAsState()
     val currentSong by viewModel.currentSong.collectAsState()
 
-    val appleRed = Color(0xFFFA243C)
+    val ytBlack = Color(0xFF030303)
+    val textPrimary = Color.White
+    val textSecondary = Color(0xFFAAAAAA)
     
     Scaffold(
+        containerColor = ytBlack,
         bottomBar = {
-            currentSong?.let { song ->
-                PlayerBottomBar(song)
+            Column {
+                // Persistent Mini Player above Bottom Nav
+                currentSong?.let { song ->
+                    PlayerBottomBar(song)
+                }
+                // Mock Bottom Navigation
+                BottomNavigationBar()
             }
-        },
-        containerColor = Color.White
+        }
     ) { padding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
         ) {
-            Text(
-                text = "Listen Now",
-                color = Color.Black,
-                fontSize = 34.sp,
-                fontWeight = FontWeight.ExtraBold,
-                modifier = Modifier.padding(start = 20.dp, top = 40.dp, bottom = 24.dp)
-            )
+            // Top Bar
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 12.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    text = "Music",
+                    color = textPrimary,
+                    fontSize = 24.sp,
+                    fontWeight = FontWeight.Bold
+                )
+                Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+                    Text("🔍", color = textPrimary, fontSize = 20.sp)
+                    Text("👤", color = textPrimary, fontSize = 20.sp)
+                }
+            }
             
-            Divider(color = Color.LightGray.copy(alpha = 0.5f), thickness = 1.dp, modifier = Modifier.padding(horizontal = 20.dp))
-            
-            Spacer(modifier = Modifier.height(16.dp))
+            // Category Pills
+            LazyRow(
+                contentPadding = PaddingValues(horizontal = 16.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                modifier = Modifier.padding(bottom = 16.dp)
+            ) {
+                val categories = listOf("Energise", "Workout", "Relax", "Commute", "Focus")
+                items(categories) { category ->
+                    Box(
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(8.dp))
+                            .background(Color(0xFF212121))
+                            .clickable { }
+                            .padding(horizontal = 16.dp, vertical = 8.dp)
+                    ) {
+                        Text(category, color = textPrimary, fontSize = 14.sp)
+                    }
+                }
+            }
 
             if (recommendations.isEmpty()) {
-                CircularProgressIndicator(
-                    modifier = Modifier.align(Alignment.CenterHorizontally).padding(top = 40.dp),
-                    color = appleRed
-                )
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    CircularProgressIndicator(color = Color.White)
+                }
             } else {
                 LazyColumn(
-                    contentPadding = PaddingValues(horizontal = 20.dp),
-                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                    contentPadding = PaddingValues(bottom = 16.dp),
+                    verticalArrangement = Arrangement.spacedBy(32.dp)
                 ) {
-                    items(recommendations) { item ->
-                        MusicItemRow(item = item, onClick = { viewModel.playSong(item) })
+                    // Split recommendations into mock sections
+                    item {
+                        CarouselSection(
+                            title = "Mixed for you", 
+                            items = recommendations.take(5), 
+                            onItemClick = { viewModel.playSong(it) }
+                        )
+                    }
+                    item {
+                        CarouselSection(
+                            title = "Listen again", 
+                            items = recommendations.drop(5).take(5), 
+                            onItemClick = { viewModel.playSong(it) }
+                        )
+                    }
+                    item {
+                        CarouselSection(
+                            title = "New releases", 
+                            items = recommendations.drop(10), 
+                            onItemClick = { viewModel.playSong(it) }
+                        )
                     }
                 }
             }
@@ -69,66 +122,81 @@ fun MainScreen(viewModel: PlayerViewModel = viewModel()) {
 }
 
 @Composable
-fun MusicItemRow(item: MusicItem, onClick: () -> Unit) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable(onClick = onClick)
-            .padding(vertical = 4.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        // Thumbnail
-        Box(
-            modifier = Modifier
-                .size(60.dp)
-                .clip(RoundedCornerShape(8.dp))
-                .background(Color.LightGray)
+fun CarouselSection(title: String, items: List<MusicItem>, onItemClick: (MusicItem) -> Unit) {
+    if (items.isEmpty()) return
+    
+    Column {
+        Text(
+            text = title,
+            color = Color.White,
+            fontSize = 20.sp,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.padding(horizontal = 16.dp, bottom = 12.dp)
         )
         
-        Spacer(modifier = Modifier.width(16.dp))
-        
-        Column(modifier = Modifier.weight(1f)) {
-            Text(
-                text = item.title,
-                color = Color.Black,
-                fontSize = 17.sp,
-                fontWeight = FontWeight.SemiBold
-            )
-            Text(
-                text = item.artist,
-                color = Color.Gray,
-                fontSize = 15.sp
-            )
+        LazyRow(
+            contentPadding = PaddingValues(horizontal = 16.dp),
+            horizontalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            items(items) { item ->
+                MusicCarouselItem(item = item, onClick = { onItemClick(item) })
+            }
         }
+    }
+}
+
+@Composable
+fun MusicCarouselItem(item: MusicItem, onClick: () -> Unit) {
+    Column(
+        modifier = Modifier
+            .width(120.dp)
+            .clickable(onClick = onClick)
+    ) {
+        // Thumbnail (Square for YT Music style)
+        Box(
+            modifier = Modifier
+                .size(120.dp)
+                .clip(RoundedCornerShape(4.dp))
+                .background(Color(0xFF212121))
+        )
         
-        // Ellipsis Icon Mock
-        Text("...", color = Color.Gray, fontSize = 24.sp, fontWeight = FontWeight.Bold, modifier = Modifier.padding(end = 8.dp))
+        Spacer(modifier = Modifier.height(8.dp))
+        
+        Text(
+            text = item.title,
+            color = Color.White,
+            fontSize = 14.sp,
+            fontWeight = FontWeight.Medium,
+            maxLines = 2
+        )
+        Text(
+            text = item.artist,
+            color = Color(0xFFAAAAAA),
+            fontSize = 12.sp,
+            maxLines = 1
+        )
     }
 }
 
 @Composable
 fun PlayerBottomBar(song: MusicItem) {
-    val appleRed = Color(0xFFFA243C)
-    
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(8.dp)
+            .background(Color(0xFF212121))
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .clip(RoundedCornerShape(16.dp))
-                .background(Color(0xFFF2F2F7)) // Soft light grey like iOS frosted glass
-                .padding(horizontal = 16.dp, vertical = 12.dp),
+                .padding(horizontal = 16.dp, vertical = 8.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             // Mini thumbnail
             Box(
                 modifier = Modifier
-                    .size(44.dp)
-                    .clip(RoundedCornerShape(6.dp))
-                    .background(Color.LightGray)
+                    .size(40.dp)
+                    .clip(RoundedCornerShape(2.dp))
+                    .background(Color.Gray)
             )
             
             Spacer(modifier = Modifier.width(12.dp))
@@ -136,29 +204,53 @@ fun PlayerBottomBar(song: MusicItem) {
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = song.title,
-                    color = Color.Black,
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 15.sp,
+                    color = Color.White,
+                    fontWeight = FontWeight.Medium,
+                    fontSize = 14.sp,
                     maxLines = 1
                 )
                 Text(
                     text = song.artist,
-                    color = appleRed,
-                    fontSize = 13.sp,
+                    color = Color(0xFFAAAAAA),
+                    fontSize = 12.sp,
                     maxLines = 1
                 )
             }
             
-            // Mock Play button
-            Box(
-                modifier = Modifier
-                    .size(36.dp)
-                    .clip(RoundedCornerShape(18.dp))
-                    .background(Color.Transparent),
-                contentAlignment = Alignment.Center
-            ) {
-                Text("▶", color = Color.Black, fontSize = 20.sp)
+            // Mock Controls
+            Row(horizontalArrangement = Arrangement.spacedBy(16.dp), verticalAlignment = Alignment.CenterVertically) {
+                Text("▶", color = Color.White, fontSize = 20.sp)
+                Text("⏭", color = Color.White, fontSize = 20.sp)
             }
         }
+    }
+}
+
+@Composable
+fun BottomNavigationBar() {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(Color(0xFF030303))
+            .padding(vertical = 8.dp),
+        horizontalArrangement = Arrangement.SpaceEvenly,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        BottomNavItem("🏠", "Home", true)
+        BottomNavItem("🎵", "Samples", false)
+        BottomNavItem("🧭", "Explore", false)
+        BottomNavItem("📚", "Library", false)
+    }
+}
+
+@Composable
+fun BottomNavItem(icon: String, label: String, isSelected: Boolean) {
+    val color = if (isSelected) Color.White else Color(0xFFAAAAAA)
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier.clickable { }
+    ) {
+        Text(icon, fontSize = 20.sp, color = color)
+        Text(label, fontSize = 10.sp, color = color, modifier = Modifier.padding(top = 2.dp))
     }
 }

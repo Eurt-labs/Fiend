@@ -14,9 +14,10 @@ All notable changes to this project will be documented in this file.
 
 - **Automated Rust Builds**: Integrated the `mozilla.rust-android-gradle.rust-android` plugin to automatically trigger Cargo builds when the app is run from Android Studio.
 - **Documentation**: Added a `README.md` containing full setup instructions for installing Rust, Cargo, and the required Android NDK targets on Windows.
+- **UI Fallback Notification**: Added a startup Toast message in `MainActivity.kt` to explicitly warn the user if the adblock engine fails to load, instead of silently disabling it.
 
 ### Changed
-- Refactored `MainScreen.kt` to an Apple Music styling (White/Red palette, floating player bar, clean headers).
+- **UI Redesign**: Completely overhauled `MainScreen.kt` to replicate the official **YouTube Music** dark theme. Replaced vertical lists with horizontal carousels ("Mixed for you", "New releases"), added top category pills, a bottom navigation bar, and a persistent mini-player docked above the navigation.
 - Updated `libs.versions.toml` to manage Kotlin 2.0 and Compose Compiler plugin explicitly to avoid classloading errors.
 
 ### Fixed

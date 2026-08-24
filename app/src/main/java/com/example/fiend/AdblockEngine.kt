@@ -3,7 +3,8 @@ package com.example.fiend
 import android.util.Log
 
 object AdblockEngine {
-    private var isEngineLoaded = false
+    var isEngineLoaded = false
+        private set
 
     init {
         try {
