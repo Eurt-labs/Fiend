@@ -3,25 +3,15 @@ package com.example.fiend
 import android.util.Log
 
 object AdblockEngine {
-    var isEngineLoaded = false
-        private set
-
     init {
-        try {
-            // Load the shared library created by Rust
-            System.loadLibrary("rust_adblock")
-            isEngineLoaded = true
-        } catch (e: UnsatisfiedLinkError) {
-            Log.e("AdblockEngine", "Rust JNI library not found. Adblocking disabled. Please compile the Rust crate.", e)
-            isEngineLoaded = false
-        }
+        // Load the shared library created by Rust
+        System.loadLibrary("rust_adblock")
     }
 
     /**
      * Checks if a URL should be blocked based on the Brave adblock-rust engine.
      */
     fun shouldBlock(url: String, resourceType: String): Boolean {
-        if (!isEngineLoaded) return false
         return shouldBlockNative(url, resourceType)
     }
 
