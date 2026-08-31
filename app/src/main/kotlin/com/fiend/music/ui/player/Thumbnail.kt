@@ -35,6 +35,7 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyHorizontalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -541,43 +542,84 @@ private fun ThumbnailItem(
         )
 
         Box(
-            modifier = Modifier
-                .scale(springScale)
-                .size(dimensions.thumbnailSize)
-                .clip(RoundedCornerShape(dimensions.cornerRadius))
-                .border(
-                    width = 1.dp,
-                    brush = Brush.verticalGradient(
-                        listOf(
-                            Color.White.copy(alpha = 0.25f),
-                            Color.White.copy(alpha = 0.05f),
-                        )
-                    ),
-                    shape = RoundedCornerShape(dimensions.cornerRadius),
-                )
+            contentAlignment = Alignment.Center,
+            modifier = Modifier.scale(springScale)
         ) {
-            if (hidePlayerThumbnail) {
-                HiddenThumbnailPlaceholder(textBackgroundColor = textBackgroundColor)
-            } else {
-                val artworkUriToUse = if (item.mediaId == currentMediaId && !currentMediaThumbnail.isNullOrBlank()) {
-                    currentMediaThumbnail
-                } else {
-                    item.mediaMetadata.artworkUri?.toString()
-                }
+            // Outer Concentric Ring
+            Box(
+                modifier = Modifier
+                    .size(dimensions.thumbnailSize + 28.dp)
+                    .clip(CircleShape)
+                    .background(Color.White.copy(alpha = 0.04f))
+                    .border(
+                        width = 1.dp,
+                        brush = Brush.verticalGradient(
+                            listOf(
+                                Color.White.copy(alpha = 0.18f),
+                                Color.White.copy(alpha = 0.02f),
+                            )
+                        ),
+                        shape = CircleShape,
+                    )
+            )
 
-                ThumbnailImage(
-                    artworkUri = artworkUriToUse,
-                    cropArtwork = cropAlbumArt
+            // Inner Concentric Ring
+            Box(
+                modifier = Modifier
+                    .size(dimensions.thumbnailSize + 14.dp)
+                    .clip(CircleShape)
+                    .background(Color.White.copy(alpha = 0.06f))
+                    .border(
+                        width = 1.dp,
+                        brush = Brush.verticalGradient(
+                            listOf(
+                                Color.White.copy(alpha = 0.28f),
+                                Color.White.copy(alpha = 0.05f),
+                            )
+                        ),
+                        shape = CircleShape,
+                    )
+            )
+
+            // Core Circular Artwork
+            Box(
+                modifier = Modifier
+                    .size(dimensions.thumbnailSize)
+                    .clip(CircleShape)
+                    .border(
+                        width = 1.5.dp,
+                        brush = Brush.verticalGradient(
+                            listOf(
+                                Color.White.copy(alpha = 0.60f),
+                                Color.White.copy(alpha = 0.15f),
+                            )
+                        ),
+                        shape = CircleShape,
+                    )
+            ) {
+                if (hidePlayerThumbnail) {
+                    HiddenThumbnailPlaceholder(textBackgroundColor = textBackgroundColor)
+                } else {
+                    val artworkUriToUse = if (item.mediaId == currentMediaId && !currentMediaThumbnail.isNullOrBlank()) {
+                        currentMediaThumbnail
+                    } else {
+                        item.mediaMetadata.artworkUri?.toString()
+                    }
+
+                    ThumbnailImage(
+                        artworkUri = artworkUriToUse,
+                        cropArtwork = true
+                    )
+                }
+                
+                // Cast button at top-right corner of thumbnail
+                CastButton(
+                    modifier = Modifier
+                        .align(Alignment.TopEnd)
+                        .padding(8.dp),
+                    tintColor = textBackgroundColor
                 )
             }
-            
-            // Cast button at top-right corner of thumbnail
-            CastButton(
-                modifier = Modifier
-                    .align(Alignment.TopEnd)
-                    .padding(8.dp),
-                tintColor = textBackgroundColor
-            )
         }
     }
 }
