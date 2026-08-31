@@ -808,15 +808,17 @@ class MainActivity : FragmentActivity() {
                         shouldShowNavigationBar,
                         playerBottomSheetState.isDismissed,
                         showRail,
+                        currentRoute,
                     ) {
                         var bottom = bottomInset
                         if (shouldShowNavigationBar && !showRail) {
                             bottom += NavigationBarHeight
                         }
                         if (!playerBottomSheetState.isDismissed) bottom += MiniPlayerHeight
+                        val topInset = if (currentRoute == Screens.Home.route) 0.dp else AppBarHeight
                         windowsInsets
                             .only(WindowInsetsSides.Horizontal + WindowInsetsSides.Top)
-                            .add(WindowInsets(top = AppBarHeight, bottom = bottom))
+                            .add(WindowInsets(top = topInset, bottom = bottom))
                     }
                 appBarScrollBehavior(
                     canScroll = {
@@ -913,7 +915,7 @@ class MainActivity : FragmentActivity() {
 
                 LaunchedEffect(navBackStackEntry) {
                     val currentRoute = navBackStackEntry?.destination?.route
-                    shouldShowTopBar = currentRoute in topLevelScreens && currentRoute != "settings"
+                    shouldShowTopBar = currentRoute in topLevelScreens && currentRoute != "settings" && currentRoute != Screens.Home.route
                 }
 val coroutineScope = rememberCoroutineScope()
                 var sharedSong: SongItem? by remember {

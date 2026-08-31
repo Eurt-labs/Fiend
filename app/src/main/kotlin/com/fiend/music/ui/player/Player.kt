@@ -804,14 +804,12 @@ fun BottomSheetPlayer(
         }
     }
 
-    val dismissedBound = QueuePeekHeight + WindowInsets.systemBars.asPaddingValues().calculateBottomPadding()
-
     val queueSheetState =
         rememberBottomSheetState(
-            dismissedBound = dismissedBound,
+            dismissedBound = 0.dp,
             expandedBound = state.expandedBound,
-            collapsedBound = dismissedBound + 1.dp,
-            initialAnchor = 1,
+            collapsedBound = 0.dp,
+            initialAnchor = 0,
         )
 
     val bottomSheetBackgroundColor =
@@ -1110,44 +1108,46 @@ fun BottomSheetPlayer(
                         }
                     }
 
-                    Spacer(Modifier.height(16.dp))
+                    if (!showInlineLyrics) {
+                        Spacer(Modifier.height(16.dp))
 
-                    // Bottom "Lyrics" curved tab
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 40.dp)
-                            .clip(RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp))
-                            .background(
-                                Brush.verticalGradient(
-                                    listOf(
-                                        Color.White.copy(alpha = 0.15f),
-                                        Color.White.copy(alpha = 0.04f),
+                        // Bottom "Lyrics" curved tab
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 40.dp)
+                                .clip(RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp))
+                                .background(
+                                    Brush.verticalGradient(
+                                        listOf(
+                                            Color.White.copy(alpha = 0.15f),
+                                            Color.White.copy(alpha = 0.04f),
+                                        )
                                     )
                                 )
-                            )
-                            .border(
-                                width = 1.dp,
-                                brush = Brush.verticalGradient(
-                                    listOf(
-                                        Color.White.copy(alpha = 0.30f),
-                                        Color.Transparent,
-                                    )
+                                .border(
+                                    width = 1.dp,
+                                    brush = Brush.verticalGradient(
+                                        listOf(
+                                            Color.White.copy(alpha = 0.30f),
+                                            Color.Transparent,
+                                        )
+                                    ),
+                                    shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp)
+                                )
+                                .clickable { showInlineLyrics = true }
+                                .padding(vertical = 10.dp),
+                            contentAlignment = Alignment.Center,
+                        ) {
+                            Text(
+                                text = stringResource(R.string.lyrics),
+                                style = MaterialTheme.typography.labelLarge.copy(
+                                    fontWeight = FontWeight.SemiBold,
+                                    letterSpacing = 1.sp,
                                 ),
-                                shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp)
+                                color = TextBackgroundColor.copy(alpha = 0.9f),
                             )
-                            .clickable { showInlineLyrics = true }
-                            .padding(vertical = 10.dp),
-                        contentAlignment = Alignment.Center,
-                    ) {
-                        Text(
-                            text = stringResource(R.string.lyrics),
-                            style = MaterialTheme.typography.labelLarge.copy(
-                                fontWeight = FontWeight.SemiBold,
-                                letterSpacing = 1.sp,
-                            ),
-                            color = TextBackgroundColor.copy(alpha = 0.9f),
-                        )
+                        }
                     }
                 }
             }
@@ -1194,6 +1194,7 @@ fun BottomSheetPlayer(
                                     mediaMetadata = mediaMetadata,
                                     showLyrics = showLyrics,
                                     positionProvider = { effectivePosition },
+                                    onDismiss = { showInlineLyrics = false },
                                 )
                             } else {
                                 Thumbnail(
@@ -1238,70 +1239,72 @@ fun BottomSheetPlayer(
                             .padding(bottom = bottomPadding)
                             .animateContentSize(),
                 ) {
-                    // Top Bar matching mockup Screen 2
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 20.dp, vertical = 8.dp),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        // Collapse
-                        IconButton(
-                            onClick = { state.collapseSoft() },
+                    // Top Bar matching mockup Screen 2 (shown only in artwork mode)
+                    if (!showInlineLyrics) {
+                        Row(
                             modifier = Modifier
-                                .size(40.dp)
-                                .clip(CircleShape)
-                                .background(Color.White.copy(alpha = 0.08f))
+                                .fillMaxWidth()
+                                .padding(horizontal = 20.dp, vertical = 8.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically,
                         ) {
-                            Icon(
-                                painter = painterResource(R.drawable.expand_more),
-                                contentDescription = null,
-                                tint = TextBackgroundColor,
-                                modifier = Modifier.size(24.dp)
+                            // Collapse
+                            IconButton(
+                                onClick = { state.collapseSoft() },
+                                modifier = Modifier
+                                    .size(40.dp)
+                                    .clip(CircleShape)
+                                    .background(Color.White.copy(alpha = 0.08f))
+                            ) {
+                                Icon(
+                                    painter = painterResource(R.drawable.expand_more),
+                                    contentDescription = null,
+                                    tint = TextBackgroundColor,
+                                    modifier = Modifier.size(24.dp)
+                                )
+                            }
+
+                            // Now Playing Title
+                            Text(
+                                text = stringResource(R.string.now_playing),
+                                style = MaterialTheme.typography.titleMedium.copy(
+                                    fontWeight = FontWeight.Bold
+                                ),
+                                color = TextBackgroundColor,
                             )
-                        }
 
-                        // Now Playing Title
-                        Text(
-                            text = stringResource(R.string.now_playing),
-                            style = MaterialTheme.typography.titleMedium.copy(
-                                fontWeight = FontWeight.Bold
-                            ),
-                            color = TextBackgroundColor,
-                        )
-
-                        // More options
-                        IconButton(
-                            onClick = {
-                                mediaMetadata?.let { meta ->
-                                    menuState.show {
-                                        PlayerMenu(
-                                            mediaMetadata = meta,
-                                            playerBottomSheetState = state,
-                                            onShowDetailsDialog = {
-                                                meta.id.let {
-                                                    bottomSheetPageState.show {
-                                                        ShowMediaInfo(it)
+                            // More options
+                            IconButton(
+                                onClick = {
+                                    mediaMetadata?.let { meta ->
+                                        menuState.show {
+                                            PlayerMenu(
+                                                mediaMetadata = meta,
+                                                playerBottomSheetState = state,
+                                                onShowDetailsDialog = {
+                                                    meta.id.let {
+                                                        bottomSheetPageState.show {
+                                                            ShowMediaInfo(it)
+                                                        }
                                                     }
-                                                }
-                                            },
-                                            onDismiss = menuState::dismiss,
-                                        )
+                                                },
+                                                onDismiss = menuState::dismiss,
+                                            )
+                                        }
                                     }
-                                }
-                            },
-                            modifier = Modifier
-                                .size(40.dp)
-                                .clip(CircleShape)
-                                .background(Color.White.copy(alpha = 0.08f))
-                        ) {
-                            Icon(
-                                painter = painterResource(R.drawable.more_horiz),
-                                contentDescription = null,
-                                tint = TextBackgroundColor,
-                                modifier = Modifier.size(22.dp)
-                            )
+                                },
+                                modifier = Modifier
+                                    .size(40.dp)
+                                    .clip(CircleShape)
+                                    .background(Color.White.copy(alpha = 0.08f))
+                            ) {
+                                Icon(
+                                    painter = painterResource(R.drawable.more_horiz),
+                                    contentDescription = null,
+                                    tint = TextBackgroundColor,
+                                    modifier = Modifier.size(22.dp)
+                                )
+                            }
                         }
                     }
 
@@ -1323,6 +1326,7 @@ fun BottomSheetPlayer(
                                     mediaMetadata = mediaMetadata,
                                     showLyrics = showLyrics,
                                     positionProvider = { effectivePosition },
+                                    onDismiss = { showInlineLyrics = false },
                                 )
                             } else {
                                 Thumbnail(
@@ -1378,6 +1382,7 @@ fun InlineLyricsView(
     mediaMetadata: MediaMetadata?,
     showLyrics: Boolean,
     positionProvider: () -> Long,
+    onDismiss: () -> Unit = {},
 ) {
     val playerConnection = LocalPlayerConnection.current ?: return
     val currentLyrics by playerConnection.currentLyrics.collectAsStateWithLifecycle(initialValue = null)
@@ -1501,6 +1506,7 @@ fun InlineLyricsView(
                     ),
                     shape = RoundedCornerShape(bottomStart = 20.dp, bottomEnd = 20.dp)
                 )
+                .clickable { onDismiss() }
                 .padding(horizontal = 28.dp, vertical = 6.dp),
             contentAlignment = Alignment.Center,
         ) {
