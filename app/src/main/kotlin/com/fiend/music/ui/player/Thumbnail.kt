@@ -541,9 +541,9 @@ private fun ThumbnailItem(
             label = "springScale",
         )
 
-        val artworkShape = RoundedCornerShape(24.dp)
-        val innerRingShape = RoundedCornerShape(28.dp)
-        val outerRingShape = RoundedCornerShape(32.dp)
+        val artworkShape = CircleShape
+        val innerRingShape = CircleShape
+        val outerRingShape = CircleShape
 
         Box(
             contentAlignment = Alignment.Center,

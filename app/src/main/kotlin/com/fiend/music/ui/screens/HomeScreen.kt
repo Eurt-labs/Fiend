@@ -9,6 +9,7 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.gestures.snapping.rememberSnapFlingBehavior
@@ -1133,83 +1134,60 @@ fun HomeScreen(
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(horizontal = 16.dp, vertical = 12.dp),
+                            .padding(horizontal = 20.dp, vertical = 14.dp),
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
-                        Text(
-                            text = stringResource(R.string.home),
-                            style = MaterialTheme.typography.headlineLarge.copy(
-                                fontWeight = androidx.compose.ui.text.font.FontWeight.Bold,
-                            ),
-                            color = MaterialTheme.colorScheme.onSurface,
-                        )
-
-                        Row(
-                            horizontalArrangement = Arrangement.spacedBy(8.dp),
-                            verticalAlignment = Alignment.CenterVertically,
+                        // Left 4-dot Grid button (opens stats/drawer)
+                        IconButton(
+                            onClick = { navController.navigate("stats") },
+                            modifier = Modifier
+                                .size(42.dp)
+                                .clip(RoundedCornerShape(14.dp))
+                                .background(Color.White.copy(alpha = 0.12f))
+                                .border(
+                                    1.dp,
+                                    Brush.verticalGradient(
+                                        listOf(
+                                            Color.White.copy(alpha = 0.30f),
+                                            Color.White.copy(alpha = 0.05f),
+                                        )
+                                    ),
+                                    RoundedCornerShape(14.dp)
+                                )
                         ) {
-                            // History button
-                            IconButton(
-                                onClick = { navController.navigate("history") },
-                                modifier = Modifier
-                                    .size(40.dp)
-                                    .clip(CircleShape)
-                                    .background(Color.White.copy(alpha = 0.08f))
-                            ) {
-                                Icon(
-                                    painter = painterResource(R.drawable.history),
-                                    contentDescription = stringResource(R.string.history),
-                                    tint = MaterialTheme.colorScheme.onSurface,
-                                    modifier = Modifier.size(20.dp),
-                                )
-                            }
+                            Icon(
+                                painter = painterResource(R.drawable.grid_view),
+                                contentDescription = stringResource(R.string.stats),
+                                tint = Color.White,
+                                modifier = Modifier.size(22.dp),
+                            )
+                        }
 
-                            // Stats / Charts button
-                            IconButton(
-                                onClick = { navController.navigate("stats") },
-                                modifier = Modifier
-                                    .size(40.dp)
-                                    .clip(CircleShape)
-                                    .background(Color.White.copy(alpha = 0.08f))
-                            ) {
-                                Icon(
-                                    painter = painterResource(R.drawable.trending_up),
-                                    contentDescription = stringResource(R.string.stats),
-                                    tint = MaterialTheme.colorScheme.onSurface,
-                                    modifier = Modifier.size(20.dp),
+                        // Right Search button
+                        IconButton(
+                            onClick = { navController.navigate("search") },
+                            modifier = Modifier
+                                .size(42.dp)
+                                .clip(CircleShape)
+                                .background(Color.White.copy(alpha = 0.12f))
+                                .border(
+                                    1.dp,
+                                    Brush.verticalGradient(
+                                        listOf(
+                                            Color.White.copy(alpha = 0.30f),
+                                            Color.White.copy(alpha = 0.05f),
+                                        )
+                                    ),
+                                    CircleShape
                                 )
-                            }
-
-                            // Account / Profile Avatar button
-                            IconButton(
-                                onClick = { navController.navigate("account") },
-                                modifier = Modifier
-                                    .size(40.dp)
-                                    .clip(CircleShape)
-                                    .background(Color.White.copy(alpha = 0.08f))
-                            ) {
-                                if (url != null) {
-                                    AsyncImage(
-                                        model = ImageRequest.Builder(LocalContext.current)
-                                            .data(url)
-                                            .crossfade(true)
-                                            .build(),
-                                        contentDescription = null,
-                                        contentScale = ContentScale.Crop,
-                                        modifier = Modifier
-                                            .size(40.dp)
-                                            .clip(CircleShape)
-                                    )
-                                } else {
-                                    Icon(
-                                        painter = painterResource(R.drawable.person),
-                                        contentDescription = stringResource(R.string.account),
-                                        tint = MaterialTheme.colorScheme.onSurface,
-                                        modifier = Modifier.size(20.dp),
-                                    )
-                                }
-                            }
+                        ) {
+                            Icon(
+                                painter = painterResource(R.drawable.search),
+                                contentDescription = stringResource(R.string.search),
+                                tint = Color.White,
+                                modifier = Modifier.size(20.dp),
+                            )
                         }
                     }
                 }
