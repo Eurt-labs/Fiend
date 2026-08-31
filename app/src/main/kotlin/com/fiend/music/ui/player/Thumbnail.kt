@@ -541,15 +541,19 @@ private fun ThumbnailItem(
             label = "springScale",
         )
 
+        val artworkShape = RoundedCornerShape(24.dp)
+        val innerRingShape = RoundedCornerShape(28.dp)
+        val outerRingShape = RoundedCornerShape(32.dp)
+
         Box(
             contentAlignment = Alignment.Center,
             modifier = Modifier.scale(springScale)
         ) {
-            // Outer Concentric Ring
+            // Outer Concentric Rounded Square Ring
             Box(
                 modifier = Modifier
-                    .size(dimensions.thumbnailSize + 28.dp)
-                    .clip(CircleShape)
+                    .size(dimensions.thumbnailSize + 24.dp)
+                    .clip(outerRingShape)
                     .background(Color.White.copy(alpha = 0.04f))
                     .border(
                         width = 1.dp,
@@ -559,15 +563,15 @@ private fun ThumbnailItem(
                                 Color.White.copy(alpha = 0.02f),
                             )
                         ),
-                        shape = CircleShape,
+                        shape = outerRingShape,
                     )
             )
 
-            // Inner Concentric Ring
+            // Inner Concentric Rounded Square Ring
             Box(
                 modifier = Modifier
-                    .size(dimensions.thumbnailSize + 14.dp)
-                    .clip(CircleShape)
+                    .size(dimensions.thumbnailSize + 12.dp)
+                    .clip(innerRingShape)
                     .background(Color.White.copy(alpha = 0.06f))
                     .border(
                         width = 1.dp,
@@ -577,15 +581,15 @@ private fun ThumbnailItem(
                                 Color.White.copy(alpha = 0.05f),
                             )
                         ),
-                        shape = CircleShape,
+                        shape = innerRingShape,
                     )
             )
 
-            // Core Circular Artwork
+            // Core Square Artwork
             Box(
                 modifier = Modifier
                     .size(dimensions.thumbnailSize)
-                    .clip(CircleShape)
+                    .clip(artworkShape)
                     .border(
                         width = 1.5.dp,
                         brush = Brush.verticalGradient(
@@ -594,7 +598,7 @@ private fun ThumbnailItem(
                                 Color.White.copy(alpha = 0.15f),
                             )
                         ),
-                        shape = CircleShape,
+                        shape = artworkShape,
                     )
             ) {
                 if (hidePlayerThumbnail) {
