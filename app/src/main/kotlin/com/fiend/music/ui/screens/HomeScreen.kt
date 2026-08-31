@@ -9,6 +9,7 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.gestures.snapping.rememberSnapFlingBehavior
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -1184,6 +1185,91 @@ fun HomeScreen(
                 state = lazylistState,
                 contentPadding = LocalPlayerAwareWindowInsets.current.asPaddingValues(),
             ) {
+                item(key = "home_top_header") {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp, vertical = 12.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Text(
+                            text = stringResource(R.string.home),
+                            style = MaterialTheme.typography.headlineLarge.copy(
+                                fontWeight = androidx.compose.ui.text.font.FontWeight.Bold,
+                            ),
+                            color = MaterialTheme.colorScheme.onSurface,
+                        )
+
+                        Row(
+                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            // History button
+                            IconButton(
+                                onClick = { navController.navigate("history") },
+                                modifier = Modifier
+                                    .size(40.dp)
+                                    .clip(CircleShape)
+                                    .background(Color.White.copy(alpha = 0.08f))
+                            ) {
+                                Icon(
+                                    painter = painterResource(R.drawable.history),
+                                    contentDescription = stringResource(R.string.history),
+                                    tint = MaterialTheme.colorScheme.onSurface,
+                                    modifier = Modifier.size(20.dp),
+                                )
+                            }
+
+                            // Stats / Charts button
+                            IconButton(
+                                onClick = { navController.navigate("stats") },
+                                modifier = Modifier
+                                    .size(40.dp)
+                                    .clip(CircleShape)
+                                    .background(Color.White.copy(alpha = 0.08f))
+                            ) {
+                                Icon(
+                                    painter = painterResource(R.drawable.trending_up),
+                                    contentDescription = stringResource(R.string.stats),
+                                    tint = MaterialTheme.colorScheme.onSurface,
+                                    modifier = Modifier.size(20.dp),
+                                )
+                            }
+
+                            // Account / Profile Avatar button
+                            IconButton(
+                                onClick = { navController.navigate("account") },
+                                modifier = Modifier
+                                    .size(40.dp)
+                                    .clip(CircleShape)
+                                    .background(Color.White.copy(alpha = 0.08f))
+                            ) {
+                                if (url != null) {
+                                    AsyncImage(
+                                        model = ImageRequest.Builder(LocalContext.current)
+                                            .data(url)
+                                            .crossfade(true)
+                                            .build(),
+                                        contentDescription = null,
+                                        contentScale = ContentScale.Crop,
+                                        modifier = Modifier
+                                            .size(40.dp)
+                                            .clip(CircleShape)
+                                    )
+                                } else {
+                                    Icon(
+                                        painter = painterResource(R.drawable.person),
+                                        contentDescription = stringResource(R.string.account),
+                                        tint = MaterialTheme.colorScheme.onSurface,
+                                        modifier = Modifier.size(20.dp),
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+
                 item {
                     ChipsRow(
                         chips = homePage?.chips?.map { it to it.title } ?: emptyList(),
@@ -1817,19 +1903,44 @@ fun HomeScreen(
                                                 isPlaying = isPlaying,
                                                 isSwipeable = false,
                                                 trailingContent = {
-                                                    IconButton(
-                                                        onClick = {
-                                                            menuState.show {
-                                                                SongMenu(
-                                                                    originalSong = song!!,
-                                                                    onDismiss = menuState::dismiss,
+                                                    val isThisSongPlaying = song!!.id == mediaMetadata?.id && isPlaying
+                                                    Box(
+                                                        contentAlignment = Alignment.Center,
+                                                        modifier = Modifier
+                                                            .size(36.dp)
+                                                            .clip(CircleShape)
+                                                            .background(
+                                                                Brush.radialGradient(
+                                                                    listOf(
+                                                                        Color(0xFFA855F7),
+                                                                        Color(0xFF9333EA),
+                                                                    )
                                                                 )
+                                                            )
+                                                            .clickable {
+                                                                if (song!!.id == mediaMetadata?.id) {
+                                                                    playerConnection.togglePlayPause()
+                                                                } else {
+                                                                    playerConnection.playQueue(
+                                                                        if (autoRadioQueue) {
+                                                                            YouTubeQueue.radio(song!!.toMediaMetadata())
+                                                                        } else {
+                                                                            ListQueue(
+                                                                                title = song!!.title,
+                                                                                items = listOf(song!!.toMediaItem())
+                                                                            )
+                                                                        }
+                                                                    )
+                                                                }
                                                             }
-                                                        },
                                                     ) {
                                                         Icon(
-                                                            painter = painterResource(R.drawable.more_vert),
+                                                            painter = painterResource(
+                                                                if (isThisSongPlaying) R.drawable.pause else R.drawable.play
+                                                            ),
                                                             contentDescription = null,
+                                                            tint = Color.White,
+                                                            modifier = Modifier.size(18.dp),
                                                         )
                                                     }
                                                 },

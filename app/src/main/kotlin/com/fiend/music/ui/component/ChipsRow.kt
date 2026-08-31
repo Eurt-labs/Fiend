@@ -55,6 +55,13 @@ import androidx.compose.ui.unit.dp
 import com.fiend.music.R
 import com.fiend.music.ui.screens.OptionStats
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
+
 @Composable
 fun <E> ChipsRow(
     chips: List<Pair<E, String>>,
@@ -73,16 +80,47 @@ fun <E> ChipsRow(
         Spacer(Modifier.width(12.dp))
 
         chips.forEach { (value, label) ->
-            FilterChip(
-                label = { Text(label) },
-                selected = currentValue == value,
-                colors = FilterChipDefaults.filterChipColors(
-                    containerColor = containerColor,
-                ),
-                onClick = { onValueUpdate(value) },
-                shape = RoundedCornerShape(16.dp),
-                border = null
-            )
+            val isSelected = currentValue == value
+            val chipShape = RoundedCornerShape(20.dp)
+            Box(
+                modifier = Modifier
+                    .clip(chipShape)
+                    .background(
+                        if (isSelected) {
+                            Brush.horizontalGradient(
+                                listOf(
+                                    Color(0xFFA855F7).copy(alpha = 0.85f),
+                                    Color(0xFF9333EA).copy(alpha = 0.85f),
+                                )
+                            )
+                        } else {
+                            Brush.verticalGradient(
+                                listOf(
+                                    Color.White.copy(alpha = 0.12f),
+                                    Color.White.copy(alpha = 0.05f),
+                                )
+                            )
+                        }
+                    )
+                    .border(
+                        width = 1.dp,
+                        brush = Brush.verticalGradient(
+                            listOf(
+                                if (isSelected) Color.White.copy(alpha = 0.50f) else Color.White.copy(alpha = 0.20f),
+                                if (isSelected) Color.White.copy(alpha = 0.15f) else Color.White.copy(alpha = 0.04f),
+                            )
+                        ),
+                        shape = chipShape
+                    )
+                    .clickable { onValueUpdate(value) }
+                    .padding(horizontal = 16.dp, vertical = 8.dp)
+            ) {
+                Text(
+                    text = label,
+                    style = MaterialTheme.typography.labelLarge,
+                    color = if (isSelected) Color.White else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.85f)
+                )
+            }
 
             Spacer(Modifier.width(8.dp))
         }
