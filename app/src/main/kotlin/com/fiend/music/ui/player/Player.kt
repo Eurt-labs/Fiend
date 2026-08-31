@@ -1472,43 +1472,86 @@ fun InlineLyricsView(
         }
     }
 
-    Box(
+    Column(
         modifier =
             Modifier
-                .fillMaxSize()
-                .clip(RoundedCornerShape(12.dp)),
-        contentAlignment = Alignment.Center,
+                .fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        when {
-            lyrics == null -> {
-                ContainedLoadingIndicator()
-            }
-
-            lyrics == LyricsEntity.LYRICS_NOT_FOUND -> {
-                Text(
-                    text = stringResource(R.string.lyrics_not_found),
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
-                    textAlign = TextAlign.Center,
+        // Top "Lyrics" curved tab matching Screen 3
+        Box(
+            modifier = Modifier
+                .padding(top = 4.dp)
+                .clip(RoundedCornerShape(bottomStart = 20.dp, bottomEnd = 20.dp))
+                .background(
+                    Brush.verticalGradient(
+                        listOf(
+                            Color.White.copy(alpha = 0.18f),
+                            Color.White.copy(alpha = 0.05f),
+                        )
+                    )
                 )
-            }
+                .border(
+                    width = 1.dp,
+                    brush = Brush.verticalGradient(
+                        listOf(
+                            Color.White.copy(alpha = 0.35f),
+                            Color.Transparent,
+                        )
+                    ),
+                    shape = RoundedCornerShape(bottomStart = 20.dp, bottomEnd = 20.dp)
+                )
+                .padding(horizontal = 28.dp, vertical = 6.dp),
+            contentAlignment = Alignment.Center,
+        ) {
+            Text(
+                text = stringResource(R.string.lyrics),
+                style = MaterialTheme.typography.titleMedium.copy(
+                    fontWeight = FontWeight.Bold,
+                    letterSpacing = 1.sp,
+                ),
+                color = Color.White,
+            )
+        }
 
-            else -> {
-                val lyricsContent: @Composable () -> Unit = {
-                    Lyrics(
-                        sliderPositionProvider = positionProvider,
-                        modifier = Modifier.padding(horizontal = 24.dp),
-                        showLyrics = showLyrics,
+        Box(
+            modifier =
+                Modifier
+                    .weight(1f)
+                    .fillMaxWidth(),
+            contentAlignment = Alignment.Center,
+        ) {
+            when {
+                lyrics == null -> {
+                    ContainedLoadingIndicator()
+                }
+
+                lyrics == LyricsEntity.LYRICS_NOT_FOUND -> {
+                    Text(
+                        text = stringResource(R.string.lyrics_not_found),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
+                        textAlign = TextAlign.Center,
                     )
                 }
-                ProvideTextStyle(
-                    value =
-                        MaterialTheme.typography.bodyMedium.copy(
-                            fontSize = 14.sp,
-                            textAlign = TextAlign.Center,
-                        ),
-                ) {
-                    lyricsContent()
+
+                else -> {
+                    val lyricsContent: @Composable () -> Unit = {
+                        Lyrics(
+                            sliderPositionProvider = positionProvider,
+                            modifier = Modifier.padding(horizontal = 24.dp),
+                            showLyrics = showLyrics,
+                        )
+                    }
+                    ProvideTextStyle(
+                        value =
+                            MaterialTheme.typography.bodyMedium.copy(
+                                fontSize = 14.sp,
+                                textAlign = TextAlign.Center,
+                            ),
+                    ) {
+                        lyricsContent()
+                    }
                 }
             }
         }

@@ -442,63 +442,81 @@ private fun NewMiniPlayer(
             }
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.fillMaxSize().padding(horizontal = 8.dp, vertical = 8.dp),
+                modifier = Modifier.fillMaxSize().padding(horizontal = 12.dp, vertical = 8.dp),
             ) {
-                // Play button with progress - isolated composable
-                NewMiniPlayerPlayButton(
-                    progressState = progressState,
-                    playbackState = playbackState,
-                    isCasting = isCasting,
-                    castHandler = castHandler,
-                    playerConnection = playerConnection,
-                    mediaMetadata = mediaMetadata,
-                    primaryColor = primaryColor,
-                    outlineColor = outlineColor,
-                )
-
-                Spacer(modifier = Modifier.width(16.dp))
-
-                // Song info - isolated composable
-                NewMiniPlayerSongInfo(
-                    mediaMetadata = mediaMetadata,
-                    onSurfaceColor = onSurfaceColor,
-                    errorColor = errorColor,
-                    modifier = Modifier.weight(1f),
+                // Circular Artwork on Left
+                AsyncImage(
+                    model = mediaMetadata?.thumbnailUrl,
+                    contentDescription = null,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .size(48.dp)
+                        .clip(CircleShape)
                 )
 
                 Spacer(modifier = Modifier.width(12.dp))
 
-                // Cast indicator
-                if (isCasting) {
-                    Icon(
-                        painter = painterResource(R.drawable.cast_connected),
-                        contentDescription = "Casting",
-                        tint = primaryColor,
-                        modifier = Modifier.size(20.dp),
+                // Song Info
+                Column(
+                    modifier = Modifier.weight(1f),
+                ) {
+                    Text(
+                        text = mediaMetadata?.title.orEmpty(),
+                        style = MaterialTheme.typography.titleMedium.copy(
+                            fontWeight = FontWeight.Bold
+                        ),
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        color = onSurfaceColor,
                     )
-                    Spacer(modifier = Modifier.width(12.dp))
+                    Text(
+                        text = mediaMetadata?.artists?.joinToString(", ") { it.name }.orEmpty(),
+                        style = MaterialTheme.typography.bodySmall,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        color = onSurfaceColor.copy(alpha = 0.65f),
+                    )
                 }
 
-// Subscribe button - isolated composable
-                mediaMetadata?.artists?.firstOrNull()?.id?.let { artistId ->
-                    SubscribeButton(
-                        artistId = artistId,
-                        metadata = mediaMetadata!!,
-                        primaryColor = primaryColor,
-                        outlineColor = outlineColor,
+                Spacer(modifier = Modifier.width(8.dp))
+
+                // Favorite Heart button
+                mediaMetadata?.let {
+                    FavoriteButton(
+                        songId = it.id,
+                        errorColor = Color(0xFFEC4899),
+                        outlineColor = onSurfaceColor.copy(alpha = 0.7f),
                         onSurfaceColor = onSurfaceColor,
                     )
                 }
 
                 Spacer(modifier = Modifier.width(8.dp))
 
-// Favorite button - isolated composable
-                mediaMetadata?.let { FavoriteButton(
-                    songId = it.id,
-                    errorColor = errorColor,
-                    outlineColor = outlineColor,
-                    onSurfaceColor = onSurfaceColor,
-                )
+                // Circular Frosted Purple Play/Pause button
+                val isEffectivelyPlaying by playerConnection.isEffectivelyPlaying.collectAsStateWithLifecycle()
+                Box(
+                    contentAlignment = Alignment.Center,
+                    modifier = Modifier
+                        .size(38.dp)
+                        .clip(CircleShape)
+                        .background(
+                            Brush.radialGradient(
+                                listOf(
+                                    Color(0xFFA855F7),
+                                    Color(0xFF9333EA),
+                                )
+                            )
+                        )
+                        .clickable {
+                            playerConnection.togglePlayPause()
+                        }
+                ) {
+                    Icon(
+                        painter = painterResource(if (isEffectivelyPlaying) R.drawable.pause else R.drawable.play),
+                        contentDescription = null,
+                        tint = Color.White,
+                        modifier = Modifier.size(20.dp),
+                    )
                 }
             }
         }
