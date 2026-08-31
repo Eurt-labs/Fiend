@@ -174,6 +174,8 @@ import com.fiend.music.ui.component.rememberBottomSheetState
 import com.fiend.music.ui.menu.PlayerMenu
 import com.fiend.music.ui.screens.settings.DarkMode
 import com.fiend.music.ui.theme.PlayerColorExtractor
+import com.fiend.music.ui.liquidglass.AppleMusicBackground
+import com.fiend.music.ui.liquidglass.LiquidGlassPill
 import com.fiend.music.ui.theme.PlayerSliderColors
 import com.fiend.music.ui.utils.ShowMediaInfo
 import com.fiend.music.ui.utils.ShowOffsetDialog
@@ -834,81 +836,12 @@ fun BottomSheetPlayer(
                         .fillMaxSize()
                         .background(bottomSheetBackgroundColor),
             ) {
-                when (playerBackground) {
-                    PlayerBackgroundStyle.BLUR -> {
-                        AnimatedContent(
-                            targetState = mediaMetadata?.thumbnailUrl,
-                            transitionSpec = {
-                                fadeIn(tween(800)).togetherWith(fadeOut(tween(800)))
-                            },
-                            label = "blurBackground",
-                        ) { thumbnailUrl ->
-                            if (thumbnailUrl != null) {
-                                Box(modifier = Modifier.alpha(backgroundAlpha)) {
-                                    AsyncImage(
-                                        model =
-                                            ImageRequest
-                                                .Builder(context)
-                                                .data(thumbnailUrl)
-                                                .size(100, 100)
-                                                .allowHardware(false)
-                                                .build(),
-                                        contentDescription = null,
-                                        contentScale = ContentScale.Crop,
-                                        modifier =
-                                            Modifier
-                                                .fillMaxSize()
-                                                .blur(if (useDarkTheme) 150.dp else 100.dp),
-                                    )
-                                    Box(
-                                        modifier =
-                                            Modifier
-                                                .fillMaxSize()
-                                                .background(Color.Black.copy(alpha = 0.3f)),
-                                    )
-                                }
-                            }
-                        }
-                    }
-
-                    PlayerBackgroundStyle.GRADIENT -> {
-                        AnimatedContent(
-                            targetState = gradientColors,
-                            transitionSpec = {
-                                fadeIn(tween(800)).togetherWith(fadeOut(tween(800)))
-                            },
-                            label = "gradientBackground",
-                        ) { colors ->
-                            if (colors.isNotEmpty()) {
-                                val gradientColorStops =
-                                    if (colors.size >= 3) {
-                                        arrayOf(
-                                            0.0f to colors[0],
-                                            0.5f to colors[1],
-                                            1.0f to colors[2],
-                                        )
-                                    } else {
-                                        arrayOf(
-                                            0.0f to colors[0],
-                                            0.6f to colors[0].copy(alpha = 0.7f),
-                                            1.0f to Color.Black,
-                                        )
-                                    }
-                                Box(
-                                    Modifier
-                                        .fillMaxSize()
-                                        .alpha(backgroundAlpha)
-                                        .background(Brush.verticalGradient(colorStops = gradientColorStops))
-                                        .background(Color.Black.copy(alpha = 0.2f)),
-                                )
-                            }
-                        }
-                    }
-
-                    else -> {
-                        PlayerBackgroundStyle.DEFAULT
-                    }
-                }
+                AppleMusicBackground(
+                    artworkUrl = mediaMetadata?.thumbnailUrl,
+                    dominantColor = if (gradientColors.isNotEmpty()) gradientColors[0] else Color(0xFF1E1E24),
+                    dimAlpha = if (useDarkTheme) 0.55f else 0.40f,
+                    modifier = Modifier.fillMaxSize().alpha(backgroundAlpha)
+                )
             }
         },
         onDismiss =
@@ -1496,10 +1429,16 @@ fun BottomSheetPlayer(
                     overflow = TextOverflow.Ellipsis,
                 )
 
+                val currentPos = sliderPosition ?: effectivePosition
+                val remainingTimeStr = if (duration != C.TIME_UNSET) {
+                    val remaining = (duration - currentPos).coerceAtLeast(0L)
+                    "-${makeTimeString(remaining)}"
+                } else ""
+
                 Text(
-                    text = if (duration != C.TIME_UNSET) makeTimeString(duration) else "",
+                    text = remainingTimeStr,
                     style = MaterialTheme.typography.labelMedium,
-                    color = TextBackgroundColor,
+                    color = TextBackgroundColor.copy(alpha = 0.75f),
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                 )

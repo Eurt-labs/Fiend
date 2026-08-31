@@ -6,10 +6,16 @@
 package com.fiend.music.ui.player
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.spring
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.ui.draw.scale
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.gestures.snapping.rememberSnapFlingBehavior
@@ -524,10 +530,31 @@ private fun ThumbnailItem(
             },
         contentAlignment = Alignment.Center
     ) {
+        val isPlaying by playerConnection.isPlaying.collectAsState()
+        val springScale by animateFloatAsState(
+            targetValue = if (isPlaying) 1.0f else 0.88f,
+            animationSpec = spring(
+                dampingRatio = 0.72f,
+                stiffness = Spring.StiffnessMediumLow,
+            ),
+            label = "springScale",
+        )
+
         Box(
             modifier = Modifier
+                .scale(springScale)
                 .size(dimensions.thumbnailSize)
                 .clip(RoundedCornerShape(dimensions.cornerRadius))
+                .border(
+                    width = 1.dp,
+                    brush = Brush.verticalGradient(
+                        listOf(
+                            Color.White.copy(alpha = 0.25f),
+                            Color.White.copy(alpha = 0.05f),
+                        )
+                    ),
+                    shape = RoundedCornerShape(dimensions.cornerRadius),
+                )
         ) {
             if (hidePlayerThumbnail) {
                 HiddenThumbnailPlaceholder(textBackgroundColor = textBackgroundColor)

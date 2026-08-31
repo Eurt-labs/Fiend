@@ -120,6 +120,7 @@ import coil3.toBitmap
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import com.fiend.music.ui.theme.PlayerColorExtractor
+import com.fiend.music.ui.liquidglass.GlassPalette
 
 /**
  * Stable wrapper for progress state - reads values only during draw phase
@@ -373,11 +374,29 @@ private fun NewMiniPlayer(
             modifier =
                 Modifier
                     .then(if (isTabletLandscape) Modifier.width(500.dp).align(Alignment.Center) else Modifier.fillMaxWidth())
+                    .padding(horizontal = 8.dp)
                     .height(64.dp)
                     .offset { IntOffset(offsetXAnimatable.value.roundToInt(), 0) }
-                    .clip(RoundedCornerShape(32.dp))
-                    .background(color = backgroundColor)
-                    .border(1.dp, outlineColor.copy(alpha = 0.3f), RoundedCornerShape(32.dp))
+                    .clip(RoundedCornerShape(24.dp))
+                    .background(
+                        brush = Brush.verticalGradient(
+                            listOf(
+                                GlassPalette.surfaceFrostedLight,
+                                GlassPalette.surfaceFrosted,
+                            )
+                        )
+                    )
+                    .border(
+                        width = 1.dp,
+                        brush = Brush.verticalGradient(
+                            listOf(
+                                Color.White.copy(alpha = 0.45f),
+                                Color.White.copy(alpha = 0.15f),
+                                Color.White.copy(alpha = 0.03f),
+                            )
+                        ),
+                        shape = RoundedCornerShape(24.dp)
+                    )
                     .clickable(
                         interactionSource = interactionSource,
                         indication = LocalIndication.current,
