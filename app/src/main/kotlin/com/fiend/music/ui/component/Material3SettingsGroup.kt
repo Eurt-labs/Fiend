@@ -34,8 +34,13 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.unit.dp
 
+import androidx.compose.foundation.border
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import com.fiend.music.ui.liquidglass.GlassPalette
+
 /**
- * A Material 3 Expressive style settings group component
+ * A Liquid Glass style settings group component
  * @param title The title of the settings group
  * @param items List of settings items to display
  */
@@ -55,7 +60,7 @@ fun Material3SettingsGroup(
                 text = it,
                 style = MaterialTheme.typography.labelLarge,
                 color = MaterialTheme.colorScheme.primary,
-                modifier = Modifier.padding(bottom = 8.dp, top = 8.dp)
+                modifier = Modifier.padding(bottom = 8.dp, top = 12.dp, start = 4.dp)
             )
         }
 
@@ -66,25 +71,35 @@ fun Material3SettingsGroup(
         ) {
             items.forEachIndexed { index, item ->
                 val shape = when {
-                    items.size == 1 -> RoundedCornerShape(24.dp)
-                    index == 0 -> RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp, bottomStart = 6.dp, bottomEnd = 6.dp)
-                    index == items.size - 1 -> RoundedCornerShape(topStart = 6.dp, topEnd = 6.dp, bottomStart = 24.dp, bottomEnd = 24.dp)
+                    items.size == 1 -> RoundedCornerShape(22.dp)
+                    index == 0 -> RoundedCornerShape(topStart = 22.dp, topEnd = 22.dp, bottomStart = 6.dp, bottomEnd = 6.dp)
+                    index == items.size - 1 -> RoundedCornerShape(topStart = 6.dp, topEnd = 6.dp, bottomStart = 22.dp, bottomEnd = 22.dp)
                     else -> RoundedCornerShape(6.dp)
                 }
 
-                Card(
+                Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .animateContentSize(),
-                    shape = shape,
-                    colors = CardDefaults.cardColors(
-                        containerColor = if (!useLowContrast) {
-                            MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
-                        } else {
-                            MaterialTheme.colorScheme.surfaceContainerLow
-                        }
-                    ),
-                    elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
+                        .animateContentSize()
+                        .clip(shape)
+                        .background(
+                            brush = Brush.verticalGradient(
+                                listOf(
+                                    GlassPalette.surfaceFrostedLight.copy(alpha = 0.55f),
+                                    GlassPalette.surfaceFrosted.copy(alpha = 0.70f),
+                                )
+                            )
+                        )
+                        .border(
+                            width = 1.dp,
+                            brush = Brush.verticalGradient(
+                                listOf(
+                                    Color.White.copy(alpha = 0.22f),
+                                    Color.White.copy(alpha = 0.05f),
+                                )
+                            ),
+                            shape = shape
+                        )
                 ) {
                     Material3SettingsItemRow(item = item)
                 }
