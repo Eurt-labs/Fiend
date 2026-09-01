@@ -1140,7 +1140,7 @@ fun HomeScreen(
                     ) {
                         // Left 4-dot Grid button (opens stats/drawer)
                         IconButton(
-                            onClick = { navController.navigate("stats") },
+                            onClick = { navController.navigate("library") },
                             modifier = Modifier
                                 .size(42.dp)
                                 .clip(RoundedCornerShape(14.dp))

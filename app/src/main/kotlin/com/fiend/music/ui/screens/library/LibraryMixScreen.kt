@@ -402,6 +402,26 @@ fun LibraryMixScreen(
             Spacer(Modifier.weight(1f))
 
             IconButton(
+                onClick = { navController.navigate("settings/updater") },
+                modifier = Modifier.padding(start = 8.dp).size(40.dp),
+            ) {
+                Icon(
+                    painter = painterResource(R.drawable.download),
+                    contentDescription = stringResource(R.string.updater),
+                )
+            }
+
+            IconButton(
+                onClick = { navController.navigate("settings") },
+                modifier = Modifier.padding(start = 8.dp).size(40.dp),
+            ) {
+                Icon(
+                    painter = painterResource(R.drawable.settings),
+                    contentDescription = stringResource(R.string.settings),
+                )
+            }
+
+            IconButton(
                 onClick = { isSearchActive = true },
                 modifier = Modifier.padding(start = 8.dp).size(40.dp),
             ) {

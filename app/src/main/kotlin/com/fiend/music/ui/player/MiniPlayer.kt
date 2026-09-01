@@ -379,22 +379,11 @@ private fun NewMiniPlayer(
                     .offset { IntOffset(offsetXAnimatable.value.roundToInt(), 0) }
                     .clip(RoundedCornerShape(24.dp))
                     .background(
-                        brush = Brush.verticalGradient(
-                            listOf(
-                                GlassPalette.surfaceFrostedLight,
-                                GlassPalette.surfaceFrosted,
-                            )
-                        )
+                        color = if (useDarkTheme) Color(0xFF1C1C1E) else Color(0xFFF2F2F7),
                     )
                     .border(
                         width = 1.dp,
-                        brush = Brush.verticalGradient(
-                            listOf(
-                                Color.White.copy(alpha = 0.45f),
-                                Color.White.copy(alpha = 0.15f),
-                                Color.White.copy(alpha = 0.03f),
-                            )
-                        ),
+                        color = if (useDarkTheme) Color.White.copy(alpha = 0.1f) else Color.Black.copy(alpha = 0.05f),
                         shape = RoundedCornerShape(24.dp)
                     )
                     .clickable(
@@ -451,7 +440,7 @@ private fun NewMiniPlayer(
                     contentScale = ContentScale.Crop,
                     modifier = Modifier
                         .size(48.dp)
-                        .clip(CircleShape)
+                        .clip(RoundedCornerShape(8.dp))
                 )
 
                 Spacer(modifier = Modifier.width(12.dp))
