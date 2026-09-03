@@ -554,7 +554,7 @@ class MainActivity : FragmentActivity() {
             }
         }
 
-        val darkTheme by rememberEnumPreference(DarkModeKey, defaultValue = DarkMode.AUTO)
+        val darkTheme by rememberEnumPreference(DarkModeKey, defaultValue = DarkMode.OFF)
         val systemInDarkTheme = isSystemInDarkTheme()
         val useDarkTheme =
             remember(darkTheme, systemInDarkTheme) {
@@ -772,15 +772,10 @@ class MainActivity : FragmentActivity() {
 
                 val showRail = (isLandscape || isTablet) && !inSearchScreen
 
-                val navPadding =
-                    if (shouldShowNavigationBar && !showRail) {
-                        if (slimNav) SlimNavBarHeight else NavigationBarHeight
-                    } else {
-                        0.dp
-                    }
+                val navPadding = 0.dp
 
                 val navigationBarHeight by animateDpAsState(
-                    targetValue = if (shouldShowNavigationBar && !showRail) NavigationBarHeight else 0.dp,
+                    targetValue = 0.dp,
                     animationSpec = NavigationBarAnimationSpec,
                     label = "navBarHeight",
                 )
@@ -790,7 +785,6 @@ class MainActivity : FragmentActivity() {
                         dismissedBound = 0.dp,
                         collapsedBound =
                             bottomInset +
-                                (if (!showRail && shouldShowNavigationBar) navPadding else 0.dp) +
                                 (if (useNewMiniPlayerDesign) MiniPlayerBottomSpacing else 0.dp) +
                                 MiniPlayerHeight,
                         expandedBound = maxHeight,
@@ -805,16 +799,14 @@ class MainActivity : FragmentActivity() {
                 val playerAwareWindowInsets =
                     remember(
                         bottomInset,
-                        shouldShowNavigationBar,
                         playerBottomSheetState.isDismissed,
                         showRail,
                         currentRoute,
                     ) {
                         var bottom = bottomInset
-                        if (shouldShowNavigationBar && !showRail) {
-                            bottom += NavigationBarHeight
+                        if (!playerBottomSheetState.isDismissed) {
+                            bottom += MiniPlayerHeight + (if (useNewMiniPlayerDesign) MiniPlayerBottomSpacing else 0.dp)
                         }
-                        if (!playerBottomSheetState.isDismissed) bottom += MiniPlayerHeight
                         val topInset = if (currentRoute == Screens.Home.route) 0.dp else AppBarHeight
                         windowsInsets
                             .only(WindowInsetsSides.Horizontal + WindowInsetsSides.Top)

@@ -166,8 +166,7 @@ fun SearchScreen(
                             onValueChange = { query = it },
                             modifier =
                                 Modifier
-                                    .weight(1f)
-                                    .focusRequester(focusRequester),
+                                    .weight(1f),
                             textStyle =
                                 TextStyle(
                                     color = MaterialTheme.colorScheme.onSurface,

@@ -587,7 +587,7 @@ fun DailyDiscoverCard(
                         Text(
                             text = dailyDiscover.recommendation.title,
                             style = MaterialTheme.typography.titleMedium,
-                            color = Color.White,
+                            color = MaterialTheme.colorScheme.onSurface,
                         )
                         Text(
                             text =
@@ -604,7 +604,7 @@ fun DailyDiscoverCard(
                                     }
                                 },
                             style = MaterialTheme.typography.bodyMedium,
-                            color = Color.White.copy(alpha = 0.7f),
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
                         )
                     }
 
@@ -631,7 +631,7 @@ fun DailyDiscoverCard(
                             ),
                         style = MaterialTheme.typography.bodySmall,
                         fontWeight = androidx.compose.ui.text.font.FontWeight.Medium,
-                        color = Color.White.copy(alpha = 0.6f),
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
                         maxLines = 1,
                         overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
                     )
@@ -1144,13 +1144,13 @@ fun HomeScreen(
                             modifier = Modifier
                                 .size(42.dp)
                                 .clip(RoundedCornerShape(14.dp))
-                                .background(Color.White.copy(alpha = 0.12f))
+                                .background(MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f))
                                 .border(
                                     1.dp,
                                     Brush.verticalGradient(
                                         listOf(
-                                            Color.White.copy(alpha = 0.30f),
-                                            Color.White.copy(alpha = 0.05f),
+                                            MaterialTheme.colorScheme.onSurface.copy(alpha = 0.30f),
+                                            MaterialTheme.colorScheme.onSurface.copy(alpha = 0.05f),
                                         )
                                     ),
                                     RoundedCornerShape(14.dp)
@@ -1159,24 +1159,24 @@ fun HomeScreen(
                             Icon(
                                 painter = painterResource(R.drawable.grid_view),
                                 contentDescription = stringResource(R.string.stats),
-                                tint = Color.White,
+                                tint = MaterialTheme.colorScheme.onSurface,
                                 modifier = Modifier.size(22.dp),
                             )
                         }
 
                         // Right Search button
                         IconButton(
-                            onClick = { navController.navigate("search") },
+                            onClick = { navController.navigate(Screens.Search.route) },
                             modifier = Modifier
                                 .size(42.dp)
                                 .clip(CircleShape)
-                                .background(Color.White.copy(alpha = 0.12f))
+                                .background(MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f))
                                 .border(
                                     1.dp,
                                     Brush.verticalGradient(
                                         listOf(
-                                            Color.White.copy(alpha = 0.30f),
-                                            Color.White.copy(alpha = 0.05f),
+                                            MaterialTheme.colorScheme.onSurface.copy(alpha = 0.30f),
+                                            MaterialTheme.colorScheme.onSurface.copy(alpha = 0.05f),
                                         )
                                     ),
                                     CircleShape
@@ -1185,7 +1185,7 @@ fun HomeScreen(
                             Icon(
                                 painter = painterResource(R.drawable.search),
                                 contentDescription = stringResource(R.string.search),
-                                tint = Color.White,
+                                tint = MaterialTheme.colorScheme.onSurface,
                                 modifier = Modifier.size(20.dp),
                             )
                         }
@@ -1861,7 +1861,7 @@ fun HomeScreen(
                                                                 if (isThisSongPlaying) R.drawable.pause else R.drawable.play
                                                             ),
                                                             contentDescription = null,
-                                                            tint = Color.White,
+                                                            tint = MaterialTheme.colorScheme.onSurface,
                                                             modifier = Modifier.size(18.dp),
                                                         )
                                                     }

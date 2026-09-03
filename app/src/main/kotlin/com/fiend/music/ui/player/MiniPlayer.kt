@@ -172,7 +172,7 @@ fun MiniPlayer(
 // ============================================================================
 
 @Composable
-private fun NewMiniPlayer(
+fun NewMiniPlayer(
     progressState: ProgressState,
     modifier: Modifier = Modifier,
     onClick: () -> Unit = {},
@@ -187,7 +187,7 @@ private fun NewMiniPlayer(
     val context = LocalContext.current
     var gradientColors by remember { mutableStateOf<List<Color>>(emptyList()) }
     val isSystemInDarkTheme = isSystemInDarkTheme()
-    val darkTheme by rememberEnumPreference(DarkModeKey, defaultValue = DarkMode.AUTO)
+    val darkTheme by rememberEnumPreference(DarkModeKey, defaultValue = DarkMode.OFF)
     val useDarkTheme =
         remember(darkTheme, isSystemInDarkTheme) {
             if (darkTheme == DarkMode.AUTO) isSystemInDarkTheme else darkTheme == DarkMode.ON
@@ -488,14 +488,7 @@ private fun NewMiniPlayer(
                     modifier = Modifier
                         .size(38.dp)
                         .clip(CircleShape)
-                        .background(
-                            Brush.radialGradient(
-                                listOf(
-                                    Color(0xFFA855F7),
-                                    Color(0xFF9333EA),
-                                )
-                            )
-                        )
+                        .background(onSurfaceColor.copy(alpha = 0.12f))
                         .clickable {
                             playerConnection.togglePlayPause()
                         }

@@ -15,6 +15,7 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.ui.draw.scale
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -541,61 +542,29 @@ private fun ThumbnailItem(
             label = "springScale",
         )
 
-        val artworkShape = RoundedCornerShape(12.dp)
-        val innerRingShape = RoundedCornerShape(18.dp)
-        val outerRingShape = RoundedCornerShape(24.dp)
+        val artworkShape = RoundedCornerShape(16.dp)
 
         Box(
             contentAlignment = Alignment.Center,
             modifier = Modifier.scale(springScale)
         ) {
-            // Outer Concentric Rounded Square Ring
-            Box(
-                modifier = Modifier
-                    .size(dimensions.thumbnailSize + 24.dp)
-                    .clip(outerRingShape)
-                    .background(Color.White.copy(alpha = 0.04f))
-                    .border(
-                        width = 1.dp,
-                        brush = Brush.verticalGradient(
-                            listOf(
-                                Color.White.copy(alpha = 0.18f),
-                                Color.White.copy(alpha = 0.02f),
-                            )
-                        ),
-                        shape = outerRingShape,
-                    )
-            )
-
-            // Inner Concentric Rounded Square Ring
-            Box(
-                modifier = Modifier
-                    .size(dimensions.thumbnailSize + 12.dp)
-                    .clip(innerRingShape)
-                    .background(Color.White.copy(alpha = 0.06f))
-                    .border(
-                        width = 1.dp,
-                        brush = Brush.verticalGradient(
-                            listOf(
-                                Color.White.copy(alpha = 0.28f),
-                                Color.White.copy(alpha = 0.05f),
-                            )
-                        ),
-                        shape = innerRingShape,
-                    )
-            )
-
-            // Core Square Artwork
+            // Core Square Artwork matching Image 5
             Box(
                 modifier = Modifier
                     .size(dimensions.thumbnailSize)
+                    .shadow(
+                        elevation = 20.dp,
+                        shape = artworkShape,
+                        spotColor = Color.Black.copy(alpha = 0.5f),
+                        ambientColor = Color.Black.copy(alpha = 0.25f),
+                    )
                     .clip(artworkShape)
                     .border(
-                        width = 1.5.dp,
+                        width = 1.dp,
                         brush = Brush.verticalGradient(
                             listOf(
-                                Color.White.copy(alpha = 0.60f),
-                                Color.White.copy(alpha = 0.15f),
+                                Color.White.copy(alpha = 0.25f),
+                                Color.White.copy(alpha = 0.05f),
                             )
                         ),
                         shape = artworkShape,
@@ -615,6 +584,22 @@ private fun ThumbnailItem(
                         cropArtwork = true
                     )
                 }
+
+                // Subtle bottom gradient fade matching Image 5
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(60.dp)
+                        .align(Alignment.BottomCenter)
+                        .background(
+                            Brush.verticalGradient(
+                                listOf(
+                                    Color.Transparent,
+                                    Color.Black.copy(alpha = 0.40f),
+                                )
+                            )
+                        )
+                )
                 
                 // Cast button at top-right corner of thumbnail
                 CastButton(
