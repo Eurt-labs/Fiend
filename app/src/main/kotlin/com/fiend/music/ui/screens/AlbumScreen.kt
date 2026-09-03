@@ -39,7 +39,7 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Checkbox
-import androidx.compose.material3.ContainedLoadingIndicator
+import com.fiend.music.ui.liquidglass.GlassmorphicLinearLoader
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.foundation.layout.aspectRatio
@@ -554,7 +554,7 @@ fun AlbumScreen(
                             .padding(32.dp),
                     contentAlignment = Alignment.Center,
                 ) {
-                    ContainedLoadingIndicator()
+                    GlassmorphicLinearLoader()
                 }
             }
         }

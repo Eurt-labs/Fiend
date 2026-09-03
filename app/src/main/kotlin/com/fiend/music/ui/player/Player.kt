@@ -62,7 +62,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.ContainedLoadingIndicator
+import com.fiend.music.ui.liquidglass.GlassmorphicLinearLoader
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.FilledIconButton
@@ -1477,23 +1477,11 @@ fun BottomSheetPlayer(
 
                                 when {
                                     lyrics == null -> {
-                                        Column(
-                                            horizontalAlignment = Alignment.CenterHorizontally,
-                                            verticalArrangement = Arrangement.Center,
-                                        ) {
-                                            androidx.compose.material3.CircularProgressIndicator(
-                                                color = Color.White,
-                                                strokeWidth = 3.dp,
-                                                modifier = Modifier.size(36.dp),
-                                            )
-                                            Spacer(Modifier.height(14.dp))
-                                            Text(
-                                                text = stringResource(R.string.lyrics_loading),
-                                                style = MaterialTheme.typography.bodyMedium,
-                                                color = Color.White.copy(alpha = 0.70f),
-                                                textAlign = TextAlign.Center,
-                                            )
-                                        }
+                                        GlassmorphicLinearLoader(
+                                            message = stringResource(R.string.lyrics_loading),
+                                            barWidth = 170.dp,
+                                            barHeight = 6.dp,
+                                        )
                                     }
 
                                     lyrics == LyricsEntity.LYRICS_NOT_FOUND || lyrics.isBlank() -> {

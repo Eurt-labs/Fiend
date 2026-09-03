@@ -48,7 +48,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ContainedLoadingIndicator
+import com.fiend.music.ui.liquidglass.GlassmorphicLinearLoader
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
@@ -1439,7 +1439,7 @@ fun HomeScreen(
                                             }
                                         }
                                     } else {
-                                        ContainedLoadingIndicator()
+                                        GlassmorphicLinearLoader(barWidth = 140.dp, barHeight = 5.dp, showCard = false)
                                     }
                                 }
                             }

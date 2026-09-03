@@ -11,7 +11,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
-import androidx.compose.material3.LoadingIndicator
+import com.fiend.music.ui.liquidglass.GlassmorphicLinearLoader
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -113,8 +113,10 @@ fun RandomizeGridItem(
 
         // Loading Indicator overlay
         Box(modifier = Modifier.alpha(loadingAlpha)) {
-            LoadingIndicator(
-                modifier = Modifier.size(48.dp),
+            GlassmorphicLinearLoader(
+                barWidth = 44.dp,
+                barHeight = 4.dp,
+                showCard = false,
                 color = MaterialTheme.colorScheme.onSecondaryContainer,
             )
         }

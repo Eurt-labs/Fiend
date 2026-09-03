@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material3.CircularWavyProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -27,6 +26,7 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import com.fiend.music.lyrics.LyricsEntry
+import com.fiend.music.ui.liquidglass.GlassmorphicLinearProgress
 
 sealed class LyricsListItem {
     data class Line(val index: Int, val entry: LyricsEntry) : LyricsListItem()
@@ -63,7 +63,7 @@ internal fun IntervalIndicator(
     }
 
     val density = LocalDensity.current
-    val targetHeightDp = 72.dp
+    val targetHeightDp = 56.dp
 
     val progress = if (gapEndMs > gapStartMs) {
         ((currentPositionMs - gapStartMs).toFloat() / (gapEndMs - gapStartMs).toFloat()).coerceIn(0f, 1f)
@@ -85,13 +85,12 @@ internal fun IntervalIndicator(
             },
         contentAlignment = Alignment.Center
     ) {
-        CircularWavyProgressIndicator(
-            progress = { animatedProgress },
-            modifier = Modifier
-                .size(36.dp)
-                .alpha(alpha.value),
+        GlassmorphicLinearProgress(
+            progress = animatedProgress,
+            modifier = Modifier.alpha(alpha.value),
             color = color,
-            trackColor = color.copy(alpha = 0.2f),
+            barWidth = 140.dp,
+            barHeight = 6.dp,
         )
     }
 }
