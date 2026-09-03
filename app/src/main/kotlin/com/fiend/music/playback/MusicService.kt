@@ -2149,13 +2149,13 @@ class MusicService :
     fun toggleLike() {
         scope.launch {
             val songToToggle = currentSong.first()
-            songToToggle?.let { librarySong ->
-                val songEntity = librarySong.song
+            if (songToToggle != null) {
+                val songEntity = songToToggle.song
 
                 // For podcast episodes, toggle save for later instead of like
                 if (songEntity.isEpisode) {
                     toggleEpisodeSaveForLater(songEntity)
-                    return@let
+                    return@launch
                 }
 
                 val song = songEntity.toggleLike(syncToYouTube = false)
@@ -2172,13 +2172,45 @@ class MusicService :
                     }
                 }
                 currentMediaMetadata.value = player.currentMetadata
+            } else {
+                // For online streaming tracks not yet in the local database:
+                // Insert the song into the database immediately so likes are permanently logged and never lost across updates/reinstalls!
+                val metadata = currentMediaMetadata.value ?: player.currentMetadata ?: return@launch
+                val initialSong = metadata.toSongEntity().copy(
+                    liked = true,
+                    likedDate = java.time.LocalDateTime.now(),
+                    inLibrary = java.time.LocalDateTime.now(),
+                )
+
+                updateNotification(isLiked = true)
+                updateWidgetUI(player.isPlaying, isLiked = true)
+
+                database.query {
+                    insert(metadata) {
+                        it.copy(
+                            liked = true,
+                            likedDate = java.time.LocalDateTime.now(),
+                            inLibrary = it.inLibrary ?: java.time.LocalDateTime.now(),
+                        )
+                    }
+                    syncUtils.likeSong(initialSong)
+
+                    if (dataStore.get(AutoDownloadOnLikeKey, false)) {
+                        downloadUtil.download(metadata.id)
+                    }
+                }
+                currentMediaMetadata.value = player.currentMetadata
             }
         }
     }
 
     fun addToTargetPlaylist() {
         scope.launch {
-            val currentSong = currentSong.first() ?: return@launch
+            val songItem = currentSong.first()?.song ?: run {
+                val metadata = currentMediaMetadata.value ?: player.currentMetadata ?: return@launch
+                database.query { insert(metadata) }
+                metadata.toSongEntity()
+            }
             val targetPlaylistId = dataStore.get(AndroidAutoTargetPlaylistKey, MediaSessionConstants.TARGET_PLAYLIST_AUTO)
 
             if (targetPlaylistId == MediaSessionConstants.TARGET_PLAYLIST_AUTO) {
@@ -2201,7 +2233,7 @@ class MusicService :
                         .toEnum(AddToPlaylistPosition.BEGINNING)
                 database.addSongsToPlaylist(
                     targetPlaylist,
-                    listOf(currentSong.id to null),
+                    listOf(songItem.id to null),
                     prepend = addToPlaylistPosition.prepend,
                 )
             }
