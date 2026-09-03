@@ -139,7 +139,8 @@ internal fun LyricsLine(
     onSizeChanged: (Int) -> Unit,
     onClick: () -> Unit,
     onLongClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    nextLineTime: Long? = null
 ) {
     val density = LocalDensity.current
     
@@ -237,18 +238,33 @@ internal fun LyricsLine(
                 val effectiveWords = if (item.words?.isNotEmpty() == true) {
                     item.words
                 } else if (mainText != null) {
-                    remember(mainText, item.time) {
+                    remember(mainText, item.time, nextLineTime) {
                         val words = mainText.split(Regex("\\s+")).filter { it.isNotBlank() }
-                        val wordDurationSec = 0.18
-                        val wordStaggerSec = 0.03
-                        val startTimeSec = item.time / 1000.0
-                        words.mapIndexed { idx, wordText ->
-                            WordTimestamp(
-                                text = wordText,
-                                startTime = startTimeSec + (idx * wordStaggerSec),
-                                endTime = startTimeSec + (idx * wordStaggerSec) + wordDurationSec,
-                                hasTrailingSpace = idx < words.size - 1
-                            )
+                        if (words.isEmpty()) {
+                            emptyList()
+                        } else {
+                            val rawDurationSec = if (nextLineTime != null && nextLineTime > item.time) {
+                                ((nextLineTime - item.time) / 1000.0).coerceIn(1.2, 8.0)
+                            } else {
+                                3.8
+                            }
+                            val activeSingingDuration = (rawDurationSec * 0.88).coerceAtLeast(0.8)
+                            val totalWeight = words.sumOf { it.length.coerceAtLeast(2) }
+                            var currentWordStart = item.time / 1000.0
+
+                            words.mapIndexed { idx, wordText ->
+                                val weight = wordText.length.coerceAtLeast(2).toDouble() / totalWeight
+                                val wordDur = (activeSingingDuration * weight).coerceAtLeast(0.18)
+                                val wordEnd = currentWordStart + wordDur
+                                val wt = WordTimestamp(
+                                    text = wordText,
+                                    startTime = currentWordStart,
+                                    endTime = wordEnd,
+                                    hasTrailingSpace = idx < words.size - 1
+                                )
+                                currentWordStart = wordEnd
+                                wt
+                            }
                         }
                     }
                 } else null

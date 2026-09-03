@@ -21,6 +21,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import com.fiend.music.ui.liquidglass.GlassmorphicLinearLoader
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -206,74 +207,10 @@ fun BottomLyricsHill(
             ),
         contentAlignment = Alignment.Center,
     ) {
-        Canvas(modifier = Modifier.fillMaxSize()) {
-            val w = size.width
-            val h = size.height
-            val startX = 0f
-            val endX = w
-            val midX = w / 2f
-            val shoulderWidth = 24.dp.toPx()
-            val leftCrest = shoulderWidth.coerceAtMost(midX - 24.dp.toPx())
-            val rightCrest = (w - shoulderWidth).coerceAtLeast(midX + 24.dp.toPx())
-            val peakY = 2.dp.toPx()
-
-            val curvePath = Path().apply {
-                moveTo(startX, h)
-                cubicTo(
-                    startX + (leftCrest - startX) * 0.45f, h,
-                    leftCrest - (leftCrest - startX) * 0.40f, peakY,
-                    leftCrest, peakY
-                )
-                lineTo(rightCrest, peakY)
-                cubicTo(
-                    rightCrest + (endX - rightCrest) * 0.40f, peakY,
-                    endX - (endX - rightCrest) * 0.45f, h,
-                    endX, h
-                )
-            }
-
-            val fillPath = Path().apply {
-                addPath(curvePath)
-                lineTo(endX, h)
-                lineTo(startX, h)
-                close()
-            }
-
-            // Translucent glass fill
-            drawPath(
-                path = fillPath,
-                brush = Brush.verticalGradient(
-                    listOf(
-                        contentColor.copy(alpha = 0.22f),
-                        contentColor.copy(alpha = 0.07f),
-                    ),
-                    startY = peakY,
-                    endY = h,
-                )
-            )
-
-            // Top highlight stroke along the curve
-            drawPath(
-                path = curvePath,
-                brush = Brush.verticalGradient(
-                    listOf(
-                        contentColor.copy(alpha = 0.52f),
-                        contentColor.copy(alpha = 0.15f),
-                    ),
-                    startY = peakY,
-                    endY = h,
-                ),
-                style = Stroke(
-                    width = 1.6.dp.toPx(),
-                    cap = StrokeCap.Round
-                )
-            )
-        }
-
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(horizontal = 14.dp, vertical = 2.dp),
+                .padding(horizontal = 8.dp, vertical = 2.dp),
             contentAlignment = Alignment.Center,
         ) {
             AnimatedContent(
@@ -357,8 +294,8 @@ fun BottomLyricsHill(
 }
 
 /**
- * Top inverted "Lyrics Hill" Drop Notch:
- * Compact, bounded drop notch at the top of the lyrics view.
+ * Top Drop Bar / Drag Handle:
+ * Minimalist, elegant grabber bar at the top of the lyrics view.
  * Clicking it dismisses lyrics.
  */
 @Composable
@@ -369,100 +306,22 @@ fun TopLyricsHill(
 ) {
     Box(
         modifier = modifier
-            .width(140.dp)
-            .height(38.dp)
+            .padding(top = 14.dp)
             .clickable(
                 interactionSource = remember { MutableInteractionSource() },
                 indication = null,
                 onClick = onClick,
-            ),
+            )
+            .padding(horizontal = 24.dp, vertical = 8.dp),
         contentAlignment = Alignment.Center,
     ) {
-        Canvas(modifier = Modifier.fillMaxSize()) {
-            val w = size.width
-            val startX = 0f
-            val endX = w
-            val midX = w / 2f
-            val crestWidth = w * 0.45f
-            val leftCrest = midX - crestWidth / 2f
-            val rightCrest = midX + crestWidth / 2f
-            val dropY = size.height - 2.dp.toPx()
-
-            val curvePath = Path().apply {
-                moveTo(startX, 0f)
-                cubicTo(
-                    startX + (leftCrest - startX) * 0.45f, 0f,
-                    leftCrest - (leftCrest - startX) * 0.40f, dropY,
-                    leftCrest, dropY
-                )
-                lineTo(rightCrest, dropY)
-                cubicTo(
-                    rightCrest + (endX - rightCrest) * 0.40f, dropY,
-                    endX - (endX - rightCrest) * 0.45f, 0f,
-                    endX, 0f
-                )
-            }
-
-            val fillPath = Path().apply {
-                addPath(curvePath)
-                lineTo(endX, 0f)
-                lineTo(startX, 0f)
-                close()
-            }
-
-            // Translucent glass fill
-            drawPath(
-                path = fillPath,
-                brush = Brush.verticalGradient(
-                    listOf(
-                        contentColor.copy(alpha = 0.06f),
-                        contentColor.copy(alpha = 0.22f),
-                    ),
-                    startY = 0f,
-                    endY = dropY,
-                )
-            )
-
-            // Bottom highlight stroke along the curve
-            drawPath(
-                path = curvePath,
-                brush = Brush.verticalGradient(
-                    listOf(
-                        contentColor.copy(alpha = 0.12f),
-                        contentColor.copy(alpha = 0.48f),
-                    ),
-                    startY = 0f,
-                    endY = dropY,
-                ),
-                style = Stroke(
-                    width = 1.6.dp.toPx(),
-                    cap = StrokeCap.Round
-                )
-            )
-        }
-
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Center,
-            modifier = Modifier.padding(bottom = 4.dp),
-        ) {
-            Icon(
-                painter = painterResource(R.drawable.expand_more),
-                contentDescription = null,
-                tint = contentColor.copy(alpha = 0.85f),
-                modifier = Modifier.size(16.dp)
-            )
-            Spacer(Modifier.width(4.dp))
-            Text(
-                text = stringResource(R.string.lyrics),
-                style = MaterialTheme.typography.labelLarge.copy(
-                    fontWeight = FontWeight.Bold,
-                    letterSpacing = 0.5.sp,
-                    fontSize = 13.sp,
-                ),
-                color = contentColor.copy(alpha = 0.95f),
-            )
-        }
+        Box(
+            modifier = Modifier
+                .width(42.dp)
+                .height(5.dp)
+                .clip(CircleShape)
+                .background(contentColor.copy(alpha = 0.40f))
+        )
     }
 }
 
@@ -525,7 +384,10 @@ fun ExpandedLyricsCard(
         ) {
             when {
                 lyrics == null -> {
-                    GlassmorphicLinearLoader(message = stringResource(R.string.lyrics_loading))
+                    GlassmorphicLinearLoader(
+                        message = stringResource(R.string.lyrics_loading),
+                        color = MaterialTheme.colorScheme.primary,
+                    )
                 }
 
                 lyrics == LyricsEntity.LYRICS_NOT_FOUND || lyrics.isBlank() -> {

@@ -162,8 +162,8 @@ fun GlassmorphicLinearLoader(
                 .background(
                     brush = Brush.verticalGradient(
                         listOf(
-                            GlassPalette.surfaceFrosted.copy(alpha = 0.85f),
-                            GlassPalette.surface.copy(alpha = 0.90f),
+                            color.copy(alpha = 0.16f),
+                            color.copy(alpha = 0.06f),
                         )
                     )
                 )
@@ -171,9 +171,9 @@ fun GlassmorphicLinearLoader(
                     width = 1.dp,
                     brush = Brush.verticalGradient(
                         listOf(
-                            Color.White.copy(alpha = 0.35f),
-                            Color.White.copy(alpha = 0.12f),
-                            Color.White.copy(alpha = 0.03f),
+                            color.copy(alpha = 0.40f),
+                            color.copy(alpha = 0.15f),
+                            Color.White.copy(alpha = 0.06f),
                         )
                     ),
                     shape = shape,

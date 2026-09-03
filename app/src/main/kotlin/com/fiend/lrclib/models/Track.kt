@@ -51,14 +51,48 @@ internal fun List<Track>.bestMatchingFor(
 ): Track? {
     if (isEmpty()) return null
 
-    if (duration == -1) {
-        if (trackName != null && artistName != null) {
-            return findBestMatch(trackName, artistName)
+    if (trackName != null && artistName != null) {
+        val normalizedTrackName = trackName.trim().lowercase()
+        val normalizedArtistName = artistName.trim().lowercase()
+
+        return maxByOrNull { track ->
+            val trackNameSimilarity = calculateSimilarity(
+                normalizedTrackName,
+                track.trackName.trim().lowercase()
+            )
+            val artistNameSimilarity = calculateSimilarity(
+                normalizedArtistName,
+                track.artistName.trim().lowercase()
+            )
+
+            var score = (trackNameSimilarity * 0.65) + (artistNameSimilarity * 0.35)
+
+            // Heavy bonus for synced lyrics
+            if (track.syncedLyrics != null) score += 0.25
+
+            if (duration > 0) {
+                val diff = abs(track.duration.toInt() - duration)
+                when {
+                    diff <= 2 -> score += 0.30
+                    diff <= 6 -> score += 0.20
+                    diff <= 15 -> score += 0.10
+                    diff <= 30 -> score += 0.05
+                    else -> score -= 0.15
+                }
+            }
+
+            score
+        }?.takeIf { track ->
+            val trackNameSimilarity = calculateSimilarity(
+                normalizedTrackName,
+                track.trackName.trim().lowercase()
+            )
+            trackNameSimilarity >= 0.45 ||
+                track.trackName.lowercase().contains(normalizedTrackName) ||
+                normalizedTrackName.contains(track.trackName.lowercase())
         }
-        return firstOrNull { it.syncedLyrics != null } ?: firstOrNull()
     }
 
-    // Use relaxed matching for duration-based search
     return bestMatchingForRelaxed(duration)
 }
 
