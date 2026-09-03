@@ -58,6 +58,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.graphics.CompositingStrategy
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
@@ -543,6 +544,7 @@ private fun ThumbnailItem(
         )
 
         val artworkShape = RoundedCornerShape(16.dp)
+        val isDark = textBackgroundColor.luminance() > 0.5f
 
         Box(
             contentAlignment = Alignment.Center,
@@ -553,18 +555,18 @@ private fun ThumbnailItem(
                 modifier = Modifier
                     .size(dimensions.thumbnailSize)
                     .shadow(
-                        elevation = 20.dp,
+                        elevation = if (isDark) 20.dp else 12.dp,
                         shape = artworkShape,
-                        spotColor = Color.Black.copy(alpha = 0.5f),
-                        ambientColor = Color.Black.copy(alpha = 0.25f),
+                        spotColor = if (isDark) Color.Black.copy(alpha = 0.5f) else Color.Black.copy(alpha = 0.15f),
+                        ambientColor = if (isDark) Color.Black.copy(alpha = 0.25f) else Color.Black.copy(alpha = 0.08f),
                     )
                     .clip(artworkShape)
                     .border(
                         width = 1.dp,
                         brush = Brush.verticalGradient(
                             listOf(
-                                Color.White.copy(alpha = 0.25f),
-                                Color.White.copy(alpha = 0.05f),
+                                if (isDark) Color.White.copy(alpha = 0.25f) else Color.Black.copy(alpha = 0.10f),
+                                if (isDark) Color.White.copy(alpha = 0.05f) else Color.Transparent,
                             )
                         ),
                         shape = artworkShape,
@@ -585,21 +587,23 @@ private fun ThumbnailItem(
                     )
                 }
 
-                // Subtle bottom gradient fade matching Image 5
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(60.dp)
-                        .align(Alignment.BottomCenter)
-                        .background(
-                            Brush.verticalGradient(
-                                listOf(
-                                    Color.Transparent,
-                                    Color.Black.copy(alpha = 0.40f),
+                // Subtle bottom gradient fade matching Image 5 (only in dark mode)
+                if (isDark) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(60.dp)
+                            .align(Alignment.BottomCenter)
+                            .background(
+                                Brush.verticalGradient(
+                                    listOf(
+                                        Color.Transparent,
+                                        Color.Black.copy(alpha = 0.40f),
+                                    )
                                 )
                             )
-                        )
-                )
+                    )
+                }
                 
                 // Cast button at top-right corner of thumbnail
                 CastButton(

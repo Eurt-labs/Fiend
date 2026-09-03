@@ -43,19 +43,41 @@ fun FiendTheme(
         // Use standard Material 3 dynamic color functions for system wallpaper colors
         if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
     } else {
-        // Use materialKolor only when a specific seed color is provided
+        // Use materialKolor with Vibrant style to dynamically reflect the song's vibrant mood
         rememberDynamicColorScheme(
-            seedColor = themeColor, // themeColor is guaranteed non-default here
+            seedColor = themeColor,
             isDark = darkTheme,
             specVersion = ColorSpec.SpecVersion.SPEC_2025,
-            style = PaletteStyle.TonalSpot // Keep existing style
+            style = PaletteStyle.Vibrant,
         )
     }
 
-    // Apply pureBlack modification if needed, similar to original logic
+    // Apply optimized Apple Music dark theme / pureBlack modifications
     val colorScheme = remember(baseColorScheme, pureBlack, darkTheme) {
-        if (darkTheme && pureBlack) {
-            baseColorScheme.pureBlack(true)
+        if (darkTheme) {
+            if (pureBlack) {
+                baseColorScheme.copy(
+                    surface = Color.Black,
+                    background = Color.Black,
+                    surfaceContainer = Color(0xFF0C0C10),
+                    surfaceContainerLow = Color(0xFF060608),
+                    surfaceContainerHigh = Color(0xFF14141A),
+                    surfaceContainerHighest = Color(0xFF1C1C24),
+                    onSurface = Color(0xFFF6F6FA),
+                    onSurfaceVariant = Color(0xFFA1A1B2),
+                )
+            } else {
+                baseColorScheme.copy(
+                    surface = Color(0xFF0E0E14),
+                    background = Color(0xFF09090D),
+                    surfaceContainer = Color(0xFF15151D),
+                    surfaceContainerLow = Color(0xFF101017),
+                    surfaceContainerHigh = Color(0xFF1D1D27),
+                    surfaceContainerHighest = Color(0xFF252532),
+                    onSurface = Color(0xFFF6F6FA),
+                    onSurfaceVariant = Color(0xFFA1A1B2),
+                )
+            }
         } else {
             baseColorScheme
         }
@@ -68,13 +90,23 @@ fun FiendTheme(
     )
 }
 
-fun Bitmap.extractThemeColor(): Color = Color(
-    Palette.from(this)
-        .maximumColorCount(8)
+fun Bitmap.extractThemeColor(): Color {
+    val palette = Palette.from(this)
+        .maximumColorCount(24)
         .generate()
-        .rankedColors(1, DefaultThemeColor.toArgb())
-        .first()
-)
+
+    val bestSwatch = palette.vibrantSwatch
+        ?: palette.lightVibrantSwatch
+        ?: palette.darkVibrantSwatch
+        ?: palette.dominantSwatch
+        ?: palette.mutedSwatch
+
+    return if (bestSwatch != null) {
+        Color(bestSwatch.rgb)
+    } else {
+        Color(palette.rankedColors(1, DefaultThemeColor.toArgb()).first())
+    }
+}
 
 internal fun Palette.rankedColors(
     desiredColorCount: Int,
@@ -89,7 +121,13 @@ internal fun Palette.rankedColors(
 fun ColorScheme.pureBlack(apply: Boolean) =
     if (apply) copy(
         surface = Color.Black,
-        background = Color.Black
+        background = Color.Black,
+        surfaceContainer = Color(0xFF0C0C10),
+        surfaceContainerLow = Color(0xFF060608),
+        surfaceContainerHigh = Color(0xFF14141A),
+        surfaceContainerHighest = Color(0xFF1C1C24),
+        onSurface = Color(0xFFF6F6FA),
+        onSurfaceVariant = Color(0xFFA1A1B2),
     ) else this
 
 val ColorSaver = object : Saver<Color, Int> {

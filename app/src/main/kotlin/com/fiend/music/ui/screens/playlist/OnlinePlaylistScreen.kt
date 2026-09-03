@@ -24,6 +24,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.width
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.unit.sp
@@ -42,14 +43,18 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHost
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.offset
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -57,6 +62,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.IntOffset
+import com.fiend.music.constants.AppBarHeight
+import com.fiend.music.ui.utils.fadingEdge
+import com.fiend.music.ui.utils.resize
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -191,6 +202,12 @@ fun OnlinePlaylistScreen(
         }
     } else if (inSelectMode) {
         BackHandler(onBack = onExitSelectionMode)
+    }
+
+    val transparentAppBar by remember {
+        derivedStateOf {
+            !isSearching && !inSelectMode && lazyListState.firstVisibleItemIndex == 0 && lazyListState.firstVisibleItemScrollOffset < 140
+        }
     }
 
     Box(Modifier.fillMaxSize()) {
@@ -475,6 +492,9 @@ fun OnlinePlaylistScreen(
                     }
                 }
             },
+            colors = TopAppBarDefaults.topAppBarColors(
+                containerColor = if (transparentAppBar) Color.Transparent else MaterialTheme.colorScheme.surface,
+            ),
         )
 
         SnackbarHost(
@@ -500,55 +520,54 @@ private fun OnlinePlaylistHeader(
     val menuState = LocalMenuState.current
     val syncUtils = LocalSyncUtils.current
 
+    val density = LocalDensity.current
+    val systemBarsTopPadding = WindowInsets.systemBars.asPaddingValues().calculateTopPadding()
+    val headerOffset = with(density) { -(systemBarsTopPadding + AppBarHeight).roundToPx() }
+    val thumbnail = playlist.thumbnail
+
     Box(
         modifier =
             modifier
                 .fillMaxWidth()
-                .padding(bottom = 20.dp),
-        contentAlignment = Alignment.TopCenter,
+                .padding(bottom = 16.dp),
     ) {
-        // Ambient Background Glow
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(340.dp)
-                .background(
-                    Brush.verticalGradient(
-                        listOf(
-                            MaterialTheme.colorScheme.primary.copy(alpha = 0.28f),
-                            MaterialTheme.colorScheme.secondary.copy(alpha = 0.12f),
-                            Color.Transparent,
-                        )
-                    )
+        // Full-width Faded Hero Artwork (matching ArtistScreen & Apple Music)
+        if (thumbnail != null) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .aspectRatio(1.05f)
+                    .offset {
+                        IntOffset(x = 0, y = headerOffset)
+                    },
+            ) {
+                AsyncImage(
+                    model = ImageRequest.Builder(LocalContext.current).data(thumbnail.resize(1200, 1200)).build(),
+                    contentDescription = null,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .align(Alignment.TopCenter)
+                        .fadingEdge(
+                            bottom = 200.dp,
+                        ),
                 )
-        )
+            }
+        }
 
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = 12.dp),
+                .padding(
+                    top = if (thumbnail != null) {
+                        val screenWidth = LocalConfiguration.current.screenWidthDp.dp
+                        (screenWidth * 0.85f) - 90.dp
+                    } else {
+                        16.dp
+                    },
+                ),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            Surface(
-                modifier =
-                    Modifier
-                        .size(220.dp)
-                        .shadow(
-                            elevation = 20.dp,
-                            shape = RoundedCornerShape(16.dp),
-                            spotColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.45f),
-                        ),
-                shape = RoundedCornerShape(16.dp),
-            ) {
-                AsyncImage(
-                    model = ImageRequest.Builder(LocalContext.current).data(playlist.thumbnail?.resize(1080, 1080)).build(),
-                    contentDescription = null,
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier.fillMaxSize(),
-                )
-            }
-
-            Spacer(modifier = Modifier.height(20.dp))
 
             Text(
                 text = playlist.title,

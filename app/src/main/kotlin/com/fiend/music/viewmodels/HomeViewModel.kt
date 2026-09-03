@@ -29,6 +29,8 @@ import com.fiend.music.constants.HideExplicitKey
 import com.fiend.music.constants.HideVideoSongsKey
 import com.fiend.music.constants.HideYoutubeShortsKey
 import com.fiend.music.constants.InnerTubeCookieKey
+import com.fiend.music.constants.OnboardingArtistsKey
+import com.fiend.music.constants.OnboardingGenresKey
 import com.fiend.music.constants.QuickPicks
 import com.fiend.music.constants.QuickPicksKey
 import com.fiend.music.constants.ShowWrappedCardKey
@@ -581,7 +583,37 @@ class HomeViewModel @Inject constructor(
                     )
                 }
 
-            similarRecommendations.value = (artistRecommendations + songRecommendations + albumRecommendations).shuffled()
+            val onboardingArtistsStr = context.dataStore.get(OnboardingArtistsKey, "")
+            val onboardingArtists = onboardingArtistsStr.split(",").map { it.trim() }.filter { it.isNotEmpty() }
+
+            val tasteArtistRecommendations = if (artistRecommendations.isEmpty() && onboardingArtists.isNotEmpty()) {
+                onboardingArtists.shuffled().take(4).mapNotNull { artistName ->
+                    val searchResult = YouTube.search(artistName, YouTube.SearchFilter.FILTER_ARTIST).getOrNull()
+                    val artistItem = searchResult?.items?.filterIsInstance<ArtistItem>()?.firstOrNull() ?: return@mapNotNull null
+                    val items = mutableListOf<YTItem>()
+                    YouTube.artist(artistItem.id).onSuccess { page ->
+                        page.sections.takeLast(3).forEach { section -> items += section.items }
+                    }
+                    SimilarRecommendation(
+                        title = com.fiend.music.db.entities.Artist(
+                            artist = com.fiend.music.db.entities.ArtistEntity(
+                                id = artistItem.id,
+                                name = artistItem.title,
+                                thumbnailUrl = artistItem.thumbnail,
+                            ),
+                            songCount = 0
+                        ),
+                        items = items
+                            .distinctBy { item -> item.id }
+                            .filterExplicit(hideExplicit)
+                            .filterVideoSongs(hideVideoSongs)
+                            .shuffled().take(12)
+                            .ifEmpty { return@mapNotNull null }
+                    )
+                }
+            } else emptyList()
+
+            similarRecommendations.value = (artistRecommendations + tasteArtistRecommendations + songRecommendations + albumRecommendations).shuffled()
             allYtItems.value = similarRecommendations.value?.flatMap { it.items }.orEmpty() +
                     homePage.value?.sections?.flatMap { it.items }.orEmpty()
         }

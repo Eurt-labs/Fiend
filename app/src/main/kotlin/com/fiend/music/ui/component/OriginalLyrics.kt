@@ -428,8 +428,7 @@ fun OriginalLyrics(
             }
 
             PlayerBackgroundStyle.BLUR, PlayerBackgroundStyle.GRADIENT -> {
-                // For blur/gradient backgrounds, always use light colors regardless of theme
-                Color.White
+                if (useDarkTheme) Color.White else MaterialTheme.colorScheme.primary
             }
         }
 

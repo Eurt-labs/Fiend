@@ -137,6 +137,11 @@ val AutoLoadMoreKey = booleanPreferencesKey("autoLoadMore")
 val AutoRadioQueueKey = booleanPreferencesKey("autoRadioQueue")
 val DisableLoadMoreWhenRepeatAllKey = booleanPreferencesKey("disableLoadMoreWhenRepeatAll")
 val AutoDownloadOnLikeKey = booleanPreferencesKey("autoDownloadOnLike")
+// Onboarding & Taste Profile
+val OnboardingCompletedKey = booleanPreferencesKey("onboardingCompleted")
+val OnboardingGenresKey = stringPreferencesKey("onboardingGenres")
+val OnboardingArtistsKey = stringPreferencesKey("onboardingArtists")
+
 val SimilarContent = booleanPreferencesKey("similarContent")
 val AutoSkipNextOnErrorKey = booleanPreferencesKey("autoSkipNextOnError")
 val AutoplayKey = booleanPreferencesKey("autoplay")

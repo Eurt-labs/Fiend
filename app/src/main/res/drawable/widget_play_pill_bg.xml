@@ -1,6 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- Fiend Glass Skeuomorphic Play Pill -->
 <shape xmlns:android="http://schemas.android.com/apk/res/android"
     android:shape="rectangle">
-    <solid android:color="#D0BCFF" />
+    <gradient
+        android:angle="270"
+        android:startColor="#55FFFFFF"
+        android:centerColor="#38FFFFFF"
+        android:endColor="#22FFFFFF"
+        android:type="linear" />
     <corners android:radius="24dp" />
+    <stroke
+        android:width="1.2dp"
+        android:color="#60FFFFFF" />
 </shape>

@@ -379,11 +379,27 @@ fun NewMiniPlayer(
                     .offset { IntOffset(offsetXAnimatable.value.roundToInt(), 0) }
                     .clip(RoundedCornerShape(24.dp))
                     .background(
-                        color = if (useDarkTheme) Color(0xFF1C1C1E) else Color(0xFFF2F2F7),
+                        brush = Brush.verticalGradient(
+                            if (useDarkTheme) listOf(
+                                MaterialTheme.colorScheme.surfaceContainerHighest.copy(alpha = 0.95f),
+                                MaterialTheme.colorScheme.surfaceContainer.copy(alpha = 0.90f),
+                            ) else listOf(
+                                MaterialTheme.colorScheme.surfaceContainerHighest.copy(alpha = 0.92f),
+                                MaterialTheme.colorScheme.surfaceContainer.copy(alpha = 0.85f),
+                            )
+                        )
                     )
                     .border(
                         width = 1.dp,
-                        color = if (useDarkTheme) Color.White.copy(alpha = 0.1f) else Color.Black.copy(alpha = 0.05f),
+                        brush = Brush.verticalGradient(
+                            if (useDarkTheme) listOf(
+                                MaterialTheme.colorScheme.primary.copy(alpha = 0.35f),
+                                Color.White.copy(alpha = 0.08f),
+                            ) else listOf(
+                                MaterialTheme.colorScheme.primary.copy(alpha = 0.30f),
+                                Color.Black.copy(alpha = 0.06f),
+                            )
+                        ),
                         shape = RoundedCornerShape(24.dp)
                     )
                     .clickable(
@@ -433,14 +449,14 @@ fun NewMiniPlayer(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.fillMaxSize().padding(horizontal = 12.dp, vertical = 8.dp),
             ) {
-                // Circular Artwork on Left
+                // Artwork on Left with rounded corners
                 AsyncImage(
                     model = mediaMetadata?.thumbnailUrl,
                     contentDescription = null,
                     contentScale = ContentScale.Crop,
                     modifier = Modifier
                         .size(48.dp)
-                        .clip(RoundedCornerShape(8.dp))
+                        .clip(RoundedCornerShape(12.dp))
                 )
 
                 Spacer(modifier = Modifier.width(12.dp))
@@ -456,14 +472,14 @@ fun NewMiniPlayer(
                         ),
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
-                        color = onSurfaceColor,
+                        color = MaterialTheme.colorScheme.onSurface,
                     )
                     Text(
                         text = mediaMetadata?.artists?.joinToString(", ") { it.name }.orEmpty(),
                         style = MaterialTheme.typography.bodySmall,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
-                        color = onSurfaceColor.copy(alpha = 0.65f),
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                 }
 
@@ -473,22 +489,39 @@ fun NewMiniPlayer(
                 mediaMetadata?.let {
                     FavoriteButton(
                         songId = it.id,
-                        errorColor = Color(0xFFEC4899),
-                        outlineColor = onSurfaceColor.copy(alpha = 0.7f),
-                        onSurfaceColor = onSurfaceColor,
+                        errorColor = Color(0xFFFF3B6B),
+                        outlineColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.60f),
+                        onSurfaceColor = MaterialTheme.colorScheme.onSurface,
                     )
                 }
 
                 Spacer(modifier = Modifier.width(8.dp))
 
-                // Circular Frosted Purple Play/Pause button
+                // Circular Frosted Dynamic Play/Pause button
                 val isEffectivelyPlaying by playerConnection.isEffectivelyPlaying.collectAsStateWithLifecycle()
                 Box(
                     contentAlignment = Alignment.Center,
                     modifier = Modifier
-                        .size(38.dp)
+                        .size(40.dp)
                         .clip(CircleShape)
-                        .background(onSurfaceColor.copy(alpha = 0.12f))
+                        .background(
+                            brush = Brush.verticalGradient(
+                                listOf(
+                                    MaterialTheme.colorScheme.primary,
+                                    MaterialTheme.colorScheme.primary.copy(alpha = 0.85f),
+                                )
+                            )
+                        )
+                        .border(
+                            1.dp,
+                            Brush.verticalGradient(
+                                listOf(
+                                    Color.White.copy(alpha = 0.40f),
+                                    Color.Transparent,
+                                )
+                            ),
+                            CircleShape
+                        )
                         .clickable {
                             playerConnection.togglePlayPause()
                         }
@@ -496,7 +529,7 @@ fun NewMiniPlayer(
                     Icon(
                         painter = painterResource(if (isEffectivelyPlaying) R.drawable.pause else R.drawable.play),
                         contentDescription = null,
-                        tint = Color.White,
+                        tint = MaterialTheme.colorScheme.onPrimary,
                         modifier = Modifier.size(20.dp),
                     )
                 }

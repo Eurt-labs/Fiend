@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Fiend Project (C) 2026
  * Licensed under GPL-3.0 | See git history for contributors
  */
@@ -42,6 +42,7 @@ fun AppleMusicBackground(
     modifier: Modifier = Modifier,
     dominantColor: Color = Color(0xFF1E1E24),
     dimAlpha: Float = 0.50f,
+    isDarkTheme: Boolean = true,
 ) {
     val configuration = LocalConfiguration.current
     val screenWidth = configuration.screenWidthDp.dp
@@ -67,10 +68,13 @@ fun AppleMusicBackground(
         label = "animOffset2",
     )
 
+    val baseBgColor = if (isDarkTheme) Color(0xFF0C0C0E) else Color(0xFFF6F5FA)
+    val scrimColor = if (isDarkTheme) Color.Black else Color.White
+
     Box(
         modifier = modifier
             .fillMaxSize()
-            .background(Color(0xFF0C0C0E)),
+            .background(baseBgColor),
     ) {
         // Base blurred artwork layer
         if (!artworkUrl.isNullOrEmpty()) {
@@ -82,7 +86,7 @@ fun AppleMusicBackground(
                     .fillMaxSize()
                     .scale(1.4f)
                     .blur(70.dp)
-                    .alpha(0.65f),
+                    .alpha(if (isDarkTheme) 0.65f else 0.45f),
             )
         }
 
@@ -95,8 +99,8 @@ fun AppleMusicBackground(
                 .background(
                     Brush.radialGradient(
                         colors = listOf(
-                            dominantColor.copy(alpha = 0.55f),
-                            dominantColor.copy(alpha = 0.15f),
+                            dominantColor.copy(alpha = if (isDarkTheme) 0.55f else 0.35f),
+                            dominantColor.copy(alpha = if (isDarkTheme) 0.15f else 0.08f),
                             Color.Transparent,
                         )
                     )
@@ -113,7 +117,7 @@ fun AppleMusicBackground(
                 .background(
                     Brush.radialGradient(
                         colors = listOf(
-                            dominantColor.copy(alpha = 0.40f),
+                            dominantColor.copy(alpha = if (isDarkTheme) 0.40f else 0.25f),
                             Color.Transparent,
                         )
                     )
@@ -121,7 +125,7 @@ fun AppleMusicBackground(
                 .blur(70.dp),
         )
 
-        // Dark glass scrim for contrast & readability
+        // Glass scrim for contrast & readability
         val bottomAlpha = (dimAlpha * 1.3f).coerceAtMost(0.92f)
         Box(
             modifier = Modifier
@@ -129,9 +133,9 @@ fun AppleMusicBackground(
                 .background(
                     Brush.verticalGradient(
                         listOf(
-                            Color.Black.copy(alpha = dimAlpha * 0.7f),
-                            Color.Black.copy(alpha = dimAlpha),
-                            Color.Black.copy(alpha = bottomAlpha),
+                            scrimColor.copy(alpha = if (isDarkTheme) dimAlpha * 0.7f else 0.35f),
+                            scrimColor.copy(alpha = if (isDarkTheme) dimAlpha else 0.50f),
+                            scrimColor.copy(alpha = if (isDarkTheme) bottomAlpha else 0.70f),
                         )
                     )
                 ),

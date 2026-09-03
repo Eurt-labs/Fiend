@@ -937,4 +937,19 @@
     <string name="stream_source_android_vr_desc">Android VR clients (all versions).</string>
     <string name="stream_source_web_creator">WEB_CREATOR</string>
     <string name="stream_source_web_creator_desc">Creator web client.</string>
+
+    <!-- Onboarding / Setup Screen -->
+    <string name="welcome_to_fiend">Welcome to Fiend</string>
+    <string name="onboarding_tagline">Your personal music sanctuary. Powered by real-time recommendations and aesthetic glass design.</string>
+    <string name="onboarding_step_vibe">Choose your vibe</string>
+    <string name="onboarding_step_vibe_desc">Select genres and styles you enjoy so we can tune your feed.</string>
+    <string name="onboarding_step_artists">Pick favorite artists</string>
+    <string name="onboarding_step_artists_desc">Pick 3 or more artists or search for any artist you love.</string>
+    <string name="onboarding_search_artists">Search artists...</string>
+    <string name="onboarding_continue">Continue</string>
+    <string name="onboarding_start_listening">Start Listening</string>
+    <string name="onboarding_skip">Skip for now</string>
+    <string name="onboarding_curating">Curating your soundscape…</string>
+    <string name="recommended_for_you">Recommended for you</string>
+    <string name="based_on_your_taste">Based on your taste</string>
 </resources>

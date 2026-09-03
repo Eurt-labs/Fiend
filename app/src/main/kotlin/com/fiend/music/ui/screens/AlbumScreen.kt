@@ -42,15 +42,20 @@ import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ContainedLoadingIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
@@ -58,6 +63,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.listSaver
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.IntOffset
+import com.fiend.music.constants.AppBarHeight
+import com.fiend.music.ui.utils.fadingEdge
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.toMutableStateList
@@ -191,61 +201,69 @@ fun AlbumScreen(
         }
     }
 
+    val lazyListState = rememberLazyListState()
+    val density = LocalDensity.current
+    val systemBarsTopPadding = WindowInsets.systemBars.asPaddingValues().calculateTopPadding()
+    val headerOffset = with(density) { -(systemBarsTopPadding + AppBarHeight).roundToPx() }
+
+    val transparentAppBar by remember {
+        derivedStateOf {
+            lazyListState.firstVisibleItemIndex == 0 && lazyListState.firstVisibleItemScrollOffset < 140
+        }
+    }
+
     LazyColumn(
+        state = lazyListState,
         contentPadding = LocalPlayerAwareWindowInsets.current.asPaddingValues(),
     ) {
         val albumWithSongs = albumWithSongs
         if (albumWithSongs != null && albumWithSongs.songs.isNotEmpty()) {
             item(key = "album_header") {
+                val thumbnailUrl = albumWithSongs.album.thumbnailUrl
+
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(bottom = 20.dp),
-                    contentAlignment = Alignment.TopCenter,
+                        .padding(bottom = 16.dp),
                 ) {
-                    // Ambient Background Glow
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(340.dp)
-                            .background(
-                                Brush.verticalGradient(
-                                    listOf(
-                                        MaterialTheme.colorScheme.primary.copy(alpha = 0.28f),
-                                        MaterialTheme.colorScheme.secondary.copy(alpha = 0.12f),
-                                        Color.Transparent,
-                                    )
-                                )
+                    // Full-width Faded Hero Artwork (matching ArtistScreen & Apple Music)
+                    if (thumbnailUrl != null) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .aspectRatio(1.05f)
+                                .offset {
+                                    IntOffset(x = 0, y = headerOffset)
+                                },
+                        ) {
+                            AsyncImage(
+                                model = thumbnailUrl.resize(1200, 1200),
+                                contentDescription = null,
+                                contentScale = ContentScale.Crop,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .align(Alignment.TopCenter)
+                                    .fadingEdge(
+                                        bottom = 200.dp,
+                                    ),
                             )
-                    )
+                        }
+                    }
 
+                    // Content positioned at bottom of the faded hero image
                     Column(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(top = 12.dp),
+                            .padding(
+                                top = if (thumbnailUrl != null) {
+                                    val screenWidth = LocalConfiguration.current.screenWidthDp.dp
+                                    (screenWidth * 0.85f) - 90.dp
+                                } else {
+                                    16.dp
+                                },
+                            ),
                         horizontalAlignment = Alignment.CenterHorizontally,
                     ) {
-                        // Album Thumbnail - Large centered with squircle corners and shadow
-                        Surface(
-                            modifier =
-                                Modifier
-                                    .size(220.dp)
-                                    .shadow(
-                                        elevation = 20.dp,
-                                        shape = RoundedCornerShape(16.dp),
-                                        spotColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.45f),
-                                    ),
-                            shape = RoundedCornerShape(16.dp),
-                        ) {
-                            AsyncImage(
-                                model = albumWithSongs.album.thumbnailUrl?.resize(1080, 1080),
-                                contentDescription = null,
-                                contentScale = ContentScale.Crop,
-                                modifier = Modifier.fillMaxSize(),
-                            )
-                        }
-
-                        Spacer(modifier = Modifier.height(20.dp))
 
                         // Album Name
                         Text(
@@ -546,7 +564,7 @@ fun AlbumScreen(
         title = {
             if (inSelectMode) {
                 Text(pluralStringResource(R.plurals.n_selected, selection.size, selection.size))
-            } else {
+            } else if (!transparentAppBar) {
                 Text(
                     text = albumWithSongs?.album?.title.orEmpty(),
                     style = MaterialTheme.typography.titleLarge,
@@ -628,5 +646,8 @@ fun AlbumScreen(
                 }
             }
         },
+        colors = TopAppBarDefaults.topAppBarColors(
+            containerColor = if (transparentAppBar) Color.Transparent else MaterialTheme.colorScheme.surface,
+        ),
     )
 }

@@ -147,8 +147,10 @@ import com.fiend.music.constants.MiniPlayerBottomSpacing
 import com.fiend.music.constants.MiniPlayerHeight
 import com.fiend.music.constants.NavigationBarAnimationSpec
 import com.fiend.music.constants.NavigationBarHeight
+import com.fiend.music.constants.OnboardingCompletedKey
 import com.fiend.music.constants.PauseListenHistoryKey
 import com.fiend.music.constants.PauseSearchHistoryKey
+import com.fiend.music.ui.screens.setup.SetupScreen
 import com.fiend.music.constants.PreferredLyricsProvider
 import com.fiend.music.constants.PreferredLyricsProviderKey
 import com.fiend.music.constants.PureBlackKey
@@ -569,6 +571,8 @@ class MainActivity : FragmentActivity() {
                 pureBlackEnabled && useDarkTheme
             }
 
+        val (onboardingCompleted, setOnboardingCompleted) = rememberPreference(OnboardingCompletedKey, defaultValue = false)
+
         val (selectedThemeColorInt) = rememberPreference(SelectedThemeColorKey, defaultValue = DefaultThemeColor.toArgb())
         val selectedThemeColor = Color(selectedThemeColorInt)
 
@@ -593,11 +597,12 @@ class MainActivity : FragmentActivity() {
                 return@LaunchedEffect
             }
 
-            playerConnection.service.currentMediaMetadata
-                .distinctUntilChanged { old, new -> old?.id == new?.id }
+            playerConnection.mediaMetadata
+                .distinctUntilChanged { old, new -> old?.id == new?.id && old?.thumbnailUrl == new?.thumbnailUrl }
                 .collectLatest { song ->
-                    if (song?.thumbnailUrl != null) {
-                        val cached = themeColorCache[song.thumbnailUrl]
+                    val thumbUrl = song?.thumbnailUrl
+                    if (thumbUrl != null) {
+                        val cached = themeColorCache[thumbUrl]
                         if (cached != null) {
                             withFrameNanos { }
                             themeColor = cached
@@ -609,7 +614,7 @@ class MainActivity : FragmentActivity() {
                                     imageLoader.execute(
                                         ImageRequest
                                             .Builder(this@MainActivity)
-                                            .data(song.thumbnailUrl)
+                                            .data(thumbUrl)
                                             .allowHardware(false)
                                             .memoryCachePolicy(CachePolicy.ENABLED)
                                             .diskCachePolicy(CachePolicy.ENABLED)
@@ -617,8 +622,9 @@ class MainActivity : FragmentActivity() {
                                             .crossfade(false)
                                             .build(),
                                     )
-                                val extractedColor = result.image?.toBitmap()?.extractThemeColor() ?: selectedThemeColor
-                                themeColorCache[song.thumbnailUrl] = extractedColor
+                                val bitmap = result.image?.toBitmap()
+                                val extractedColor = bitmap?.extractThemeColor() ?: selectedThemeColor
+                                themeColorCache[thumbUrl] = extractedColor
                                 withFrameNanos { }
                                 themeColor = extractedColor
                             } catch (e: Exception) {
@@ -1385,6 +1391,19 @@ val coroutineScope = rememberCoroutineScope()
                                 },
                             )
                         }
+                    }
+
+                    AnimatedVisibility(
+                        visible = !onboardingCompleted,
+                        enter = fadeIn(tween(400)),
+                        exit = fadeOut(tween(400)),
+                    ) {
+                        SetupScreen(
+                            onComplete = {
+                                setOnboardingCompleted(true)
+                                homeViewModel.refresh()
+                            }
+                        )
                     }
                 }
             }
