@@ -48,6 +48,7 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.add
 import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -58,6 +59,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.border
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -1343,9 +1346,407 @@ fun BottomSheetPlayer(
                 }
         }
 
+        val landscapeControlsContent: @Composable ColumnScope.(MediaMetadata) -> Unit = { mediaMetadata ->
+            // 1. Header Top Bar: [Collapse] - [Now Playing] - [More Options]
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 2.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                IconButton(
+                    onClick = { state.collapseSoft() },
+                    modifier = Modifier
+                        .size(36.dp)
+                        .clip(CircleShape)
+                        .background(TextBackgroundColor.copy(alpha = 0.10f))
+                ) {
+                    Icon(
+                        painter = painterResource(R.drawable.expand_more),
+                        contentDescription = null,
+                        tint = TextBackgroundColor,
+                        modifier = Modifier.size(22.dp)
+                    )
+                }
+
+                Text(
+                    text = stringResource(R.string.now_playing),
+                    style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
+                    color = TextBackgroundColor,
+                )
+
+                IconButton(
+                    onClick = {
+                        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                        menuState.show {
+                            PlayerMenu(
+                                mediaMetadata = mediaMetadata,
+                                playerBottomSheetState = state,
+                                onShowDetailsDialog = {
+                                    mediaMetadata.id.let {
+                                        bottomSheetPageState.show {
+                                            ShowMediaInfo(it)
+                                        }
+                                    }
+                                },
+                                onDismiss = menuState::dismiss,
+                            )
+                        }
+                    },
+                    modifier = Modifier
+                        .size(36.dp)
+                        .clip(CircleShape)
+                        .background(TextBackgroundColor.copy(alpha = 0.10f))
+                ) {
+                    Icon(
+                        painter = painterResource(R.drawable.more_horiz),
+                        contentDescription = null,
+                        tint = TextBackgroundColor,
+                        modifier = Modifier.size(20.dp)
+                    )
+                }
+            }
+
+            Spacer(Modifier.height(4.dp))
+
+            // 2. Audio Quality & Automix specs badge
+            val currentFormat by playerConnection.currentFormat.collectAsStateWithLifecycle(initialValue = null)
+            val audioQualityText = remember(currentFormat) {
+                val format = currentFormat ?: return@remember "Opus • 160 kbps • 48.0 kHz • Stereo"
+                val codec = when {
+                    format.codecs.contains("opus", ignoreCase = true) || format.mimeType.contains("opus", ignoreCase = true) -> "Opus"
+                    format.codecs.contains("mp4a", ignoreCase = true) || format.mimeType.contains("mp4", ignoreCase = true) -> "AAC"
+                    format.codecs.contains("flac", ignoreCase = true) -> "FLAC"
+                    else -> format.codecs.takeIf { it.isNotBlank() } ?: "Opus"
+                }
+                val bitrate = if (format.bitrate > 0) "${format.bitrate / 1000} kbps" else "160 kbps"
+                val sampleRate = if (format.sampleRate != null && format.sampleRate > 0) {
+                    String.format(java.util.Locale.US, "%.1f kHz", format.sampleRate / 1000.0)
+                } else "48.0 kHz"
+                listOf(codec, bitrate, sampleRate, "Stereo").joinToString(" • ")
+            }
+
+            Text(
+                text = audioQualityText,
+                style = MaterialTheme.typography.labelSmall.copy(
+                    fontSize = 10.sp,
+                    letterSpacing = 0.3.sp,
+                    fontWeight = FontWeight.Medium,
+                ),
+                color = TextBackgroundColor.copy(alpha = 0.50f),
+                textAlign = TextAlign.Center,
+                maxLines = 1,
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+            )
+
+            Spacer(Modifier.height(6.dp))
+
+            // 3. Song Title & Artist + Like & Queue Buttons
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween,
+            ) {
+                Column(
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(end = 12.dp),
+                ) {
+                    Text(
+                        text = mediaMetadata.title,
+                        style = MaterialTheme.typography.titleLarge.copy(
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 18.sp,
+                        ),
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        color = TextBackgroundColor,
+                        modifier = Modifier.basicMarquee(iterations = 1, initialDelayMillis = 3000, velocity = 30.dp)
+                    )
+                    Spacer(Modifier.height(2.dp))
+                    Text(
+                        text = mediaMetadata.artists.joinToString(", ") { it.name },
+                        style = MaterialTheme.typography.bodyMedium.copy(
+                            fontSize = 13.sp,
+                            fontWeight = FontWeight.Normal,
+                        ),
+                        color = TextBackgroundColor.copy(alpha = 0.70f),
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier.basicMarquee(iterations = 1, initialDelayMillis = 3000, velocity = 30.dp)
+                    )
+                }
+
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    val isEpisode = currentSong?.song?.isEpisode == true
+                    val isFavorite = if (isEpisode) currentSong?.song?.inLibrary != null else currentSong?.song?.liked == true
+                    IconButton(
+                        onClick = {
+                            haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                            playerConnection.toggleLike()
+                        },
+                        modifier = Modifier
+                            .size(38.dp)
+                            .clip(CircleShape)
+                            .background(
+                                if (isFavorite) Color(0xFFFF3B6B).copy(alpha = 0.18f)
+                                else TextBackgroundColor.copy(alpha = 0.10f)
+                            )
+                            .border(
+                                1.dp,
+                                if (isFavorite) Color(0xFFFF3B6B).copy(alpha = 0.50f)
+                                else TextBackgroundColor.copy(alpha = 0.15f),
+                                CircleShape
+                            )
+                    ) {
+                        Icon(
+                            painter = painterResource(if (isFavorite) R.drawable.favorite else R.drawable.favorite_border),
+                            contentDescription = null,
+                            tint = if (isFavorite) Color(0xFFFF3B6B) else TextBackgroundColor.copy(alpha = 0.85f),
+                            modifier = Modifier.size(20.dp)
+                        )
+                    }
+
+                    IconButton(
+                        onClick = {
+                            haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                            coroutineScope.launch {
+                                queueSheetState.expandSoft()
+                            }
+                        },
+                        modifier = Modifier
+                            .size(38.dp)
+                            .clip(CircleShape)
+                            .background(TextBackgroundColor.copy(alpha = 0.10f))
+                            .border(1.dp, TextBackgroundColor.copy(alpha = 0.15f), CircleShape)
+                    ) {
+                        Icon(
+                            painter = painterResource(R.drawable.queue_music),
+                            contentDescription = stringResource(R.string.queue),
+                            tint = TextBackgroundColor.copy(alpha = 0.85f),
+                            modifier = Modifier.size(20.dp)
+                        )
+                    }
+                }
+            }
+
+            Spacer(Modifier.height(6.dp))
+
+            // 4. Progress Slider & Timestamps
+            androidx.compose.material3.Slider(
+                value = (sliderPosition ?: effectivePosition).toFloat(),
+                onValueChange = { newPosition ->
+                    sliderPosition = newPosition.toLong()
+                },
+                onValueChangeFinished = {
+                    val finalPosition = sliderPosition ?: return@Slider
+                    if (isCasting) {
+                        castHandler?.seekTo(finalPosition)
+                        lastManualSeekTime = System.currentTimeMillis()
+                    } else {
+                        playerConnection.player.seekTo(finalPosition)
+                    }
+                    sliderPosition = null
+                },
+                valueRange = 0f..(if (duration != C.TIME_UNSET && duration > 0) duration.toFloat() else 1f),
+                modifier = Modifier.padding(horizontal = 8.dp),
+                colors = androidx.compose.material3.SliderDefaults.colors(
+                    thumbColor = TextBackgroundColor,
+                    activeTrackColor = TextBackgroundColor,
+                    inactiveTrackColor = TextBackgroundColor.copy(alpha = 0.2f)
+                )
+            )
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    text = android.text.format.DateUtils.formatElapsedTime((sliderPosition ?: effectivePosition) / 1000),
+                    style = MaterialTheme.typography.bodySmall.copy(fontSize = 11.sp),
+                    color = TextBackgroundColor.copy(alpha = 0.7f)
+                )
+                Text(
+                    text = if (duration != C.TIME_UNSET) android.text.format.DateUtils.formatElapsedTime(duration / 1000) else "0:00",
+                    style = MaterialTheme.typography.bodySmall.copy(fontSize = 11.sp),
+                    color = TextBackgroundColor.copy(alpha = 0.7f)
+                )
+            }
+
+            Spacer(Modifier.height(6.dp))
+
+            // 5. Consolidated Playback Controls Row: [Shuffle] [Previous] [Play/Pause] [Next] [Repeat]
+            Row(
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp),
+            ) {
+                // Shuffle
+                IconButton(
+                    onClick = {
+                        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                        playerConnection.player.shuffleModeEnabled = !shuffleModeEnabled
+                    },
+                    modifier = Modifier
+                        .size(38.dp)
+                        .clip(CircleShape)
+                        .background(
+                            if (shuffleModeEnabled) MaterialTheme.colorScheme.primary.copy(alpha = 0.22f)
+                            else TextBackgroundColor.copy(alpha = 0.08f)
+                        )
+                        .border(
+                            width = 1.dp,
+                            color = if (shuffleModeEnabled) MaterialTheme.colorScheme.primary.copy(alpha = 0.55f)
+                            else TextBackgroundColor.copy(alpha = 0.15f),
+                            shape = CircleShape
+                        )
+                ) {
+                    Icon(
+                        painter = painterResource(R.drawable.shuffle),
+                        contentDescription = null,
+                        tint = if (shuffleModeEnabled) MaterialTheme.colorScheme.primary else TextBackgroundColor.copy(alpha = 0.85f),
+                        modifier = Modifier.size(18.dp)
+                    )
+                }
+
+                Spacer(Modifier.width(14.dp))
+
+                // Previous
+                IconButton(
+                    onClick = playerConnection::seekToPrevious,
+                    enabled = canSkipPrevious,
+                    modifier = Modifier
+                        .size(46.dp)
+                        .clip(CircleShape)
+                        .background(TextBackgroundColor.copy(alpha = 0.10f))
+                        .border(1.dp, TextBackgroundColor.copy(alpha = 0.18f), CircleShape)
+                ) {
+                    Icon(
+                        painter = painterResource(R.drawable.skip_previous),
+                        contentDescription = null,
+                        tint = TextBackgroundColor,
+                        modifier = Modifier.size(24.dp)
+                    )
+                }
+
+                Spacer(Modifier.width(14.dp))
+
+                // Play/Pause
+                Box(
+                    contentAlignment = Alignment.Center,
+                    modifier = Modifier
+                        .size(58.dp)
+                        .clip(CircleShape)
+                        .background(TextBackgroundColor.copy(alpha = 0.14f))
+                        .border(
+                            1.dp,
+                            Brush.verticalGradient(
+                                listOf(
+                                    TextBackgroundColor.copy(alpha = 0.30f),
+                                    TextBackgroundColor.copy(alpha = 0.06f),
+                                )
+                            ),
+                            CircleShape
+                        )
+                        .clickable {
+                            playerConnection.togglePlayPause()
+                        }
+                ) {
+                    Icon(
+                        painter = painterResource(if (effectiveIsPlaying) R.drawable.pause else R.drawable.play),
+                        contentDescription = null,
+                        tint = TextBackgroundColor,
+                        modifier = Modifier.size(30.dp)
+                    )
+                }
+
+                Spacer(Modifier.width(14.dp))
+
+                // Next
+                IconButton(
+                    onClick = playerConnection::seekToNext,
+                    enabled = canSkipNext,
+                    modifier = Modifier
+                        .size(46.dp)
+                        .clip(CircleShape)
+                        .background(TextBackgroundColor.copy(alpha = 0.10f))
+                        .border(1.dp, TextBackgroundColor.copy(alpha = 0.18f), CircleShape)
+                ) {
+                    Icon(
+                        painter = painterResource(R.drawable.skip_next),
+                        contentDescription = null,
+                        tint = TextBackgroundColor,
+                        modifier = Modifier.size(24.dp)
+                    )
+                }
+
+                Spacer(Modifier.width(14.dp))
+
+                // Repeat
+                val isRepeatActive = repeatMode != Player.REPEAT_MODE_OFF
+                IconButton(
+                    onClick = {
+                        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                        playerConnection.player.toggleRepeatMode()
+                    },
+                    modifier = Modifier
+                        .size(38.dp)
+                        .clip(CircleShape)
+                        .background(
+                            if (isRepeatActive) MaterialTheme.colorScheme.primary.copy(alpha = 0.22f)
+                            else TextBackgroundColor.copy(alpha = 0.08f)
+                        )
+                        .border(
+                            width = 1.dp,
+                            color = if (isRepeatActive) MaterialTheme.colorScheme.primary.copy(alpha = 0.55f)
+                            else TextBackgroundColor.copy(alpha = 0.15f),
+                            shape = CircleShape
+                        )
+                ) {
+                    Icon(
+                        painter = painterResource(
+                            when (repeatMode) {
+                                Player.REPEAT_MODE_ONE -> R.drawable.repeat_one
+                                else -> R.drawable.repeat
+                            }
+                        ),
+                        contentDescription = null,
+                        tint = if (isRepeatActive) MaterialTheme.colorScheme.primary else TextBackgroundColor.copy(alpha = 0.85f),
+                        modifier = Modifier.size(18.dp)
+                    )
+                }
+            }
+
+            Spacer(Modifier.height(6.dp))
+
+            // 6. Mini Lyrics Hill Pill (Toggles synchronized lyrics on the left pane)
+            BottomLyricsHill(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(36.dp)
+                    .padding(horizontal = 16.dp),
+                contentColor = TextBackgroundColor,
+                lyrics = currentLyrics?.lyrics,
+                positionProvider = {
+                    sliderPosition ?: if (isCasting) castPosition else playerConnection.player.currentPosition
+                },
+                isPlaying = effectiveIsPlaying,
+                onClick = {
+                    haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                    showInlineLyrics = !showInlineLyrics
+                },
+            )
+        }
+
         when (LocalConfiguration.current.orientation) {
             Configuration.ORIENTATION_LANDSCAPE -> {
-                // Calculate vertical padding like OuterTune
                 val density = LocalDensity.current
                 val verticalPadding =
                     max(
@@ -1360,24 +1761,27 @@ fun BottomSheetPlayer(
                         Modifier
                             .windowInsetsPadding(
                                 WindowInsets.systemBars.only(WindowInsetsSides.Horizontal).add(verticalWindowInsets),
-                            ).padding(bottom = 24.dp)
+                            )
+                            .padding(bottom = 12.dp)
                             .fillMaxSize(),
+                    verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Box(
                         contentAlignment = Alignment.Center,
                         modifier =
                             Modifier
                                 .weight(1f)
+                                .fillMaxHeight()
+                                .padding(horizontal = 8.dp)
                                 .nestedScroll(state.preUpPostDownNestedScrollConnection),
                     ) {
-                        // Remember lambdas to prevent unnecessary recomposition
                         val currentSliderPosition by rememberUpdatedState(sliderPosition)
                         val sliderPositionProvider = remember { { currentSliderPosition } }
                         val isExpandedProvider = remember(state) { { state.isExpanded } }
                         AnimatedContent(
                             targetState = showInlineLyrics,
-                            label = "Lyrics",
-                            transitionSpec = { fadeIn() togetherWith fadeOut() },
+                            label = "LyricsLandscape",
+                            transitionSpec = { fadeIn(tween(300)) togetherWith fadeOut(tween(300)) },
                         ) { showLyrics ->
                             if (showLyrics) {
                                 InlineLyricsView(
@@ -1399,19 +1803,17 @@ fun BottomSheetPlayer(
 
                     Column(
                         horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center,
                         modifier =
                             Modifier
-                                .weight(if (showInlineLyrics) 0.65f else 1f, false)
-                                .animateContentSize()
-                                .windowInsetsPadding(WindowInsets.systemBars.only(WindowInsetsSides.Top)),
+                                .weight(if (showInlineLyrics) 0.85f else 1f)
+                                .fillMaxHeight()
+                                .verticalScroll(rememberScrollState())
+                                .padding(horizontal = 4.dp),
                     ) {
-                        Spacer(Modifier.weight(1f))
-
                         mediaMetadata?.let {
-                            controlsContent(it)
+                            landscapeControlsContent(it)
                         }
-
-                        Spacer(Modifier.weight(1f))
                     }
                 }
             }

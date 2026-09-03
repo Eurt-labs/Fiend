@@ -400,6 +400,14 @@ class MainActivity : FragmentActivity() {
         val hideNavBar = dataStore.get(HideNavigationBarKey, true)
         applyNavigationBarVisibility(hideNavBar)
 
+        val darkThemeSetting = dataStore.get(DarkModeKey, DarkMode.OFF.name)
+        val initialIsDark = when (darkThemeSetting) {
+            DarkMode.ON.name -> true
+            DarkMode.OFF.name -> false
+            else -> (resources.configuration.uiMode and android.content.res.Configuration.UI_MODE_NIGHT_MASK) == android.content.res.Configuration.UI_MODE_NIGHT_YES
+        }
+        setSystemBarAppearance(initialIsDark)
+
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
             val locale =
                 dataStore[AppLanguageKey]
@@ -600,7 +608,9 @@ class MainActivity : FragmentActivity() {
                 pureBlackEnabled && useDarkTheme
             }
 
-        val (onboardingCompleted, setOnboardingCompleted) = rememberPreference(OnboardingCompletedKey, defaultValue = false)
+        val initialOnboardingCompleted = rememberSaveable { dataStore.get(OnboardingCompletedKey, false) }
+        val (onboardingCompleted, setOnboardingCompleted) = rememberPreference(OnboardingCompletedKey, defaultValue = initialOnboardingCompleted)
+        var hasCompletedOnboardingSession by rememberSaveable { mutableStateOf(initialOnboardingCompleted) }
 
         val (selectedThemeColorInt) = rememberPreference(SelectedThemeColorKey, defaultValue = DefaultThemeColor.toArgb())
         val selectedThemeColor = Color(selectedThemeColorInt)
@@ -1422,13 +1432,16 @@ val coroutineScope = rememberCoroutineScope()
                         }
                     }
 
+                    val showOnboarding = !onboardingCompleted && !hasCompletedOnboardingSession
+
                     AnimatedVisibility(
-                        visible = !onboardingCompleted,
+                        visible = showOnboarding,
                         enter = fadeIn(tween(400)),
                         exit = fadeOut(tween(400)),
                     ) {
                         SetupScreen(
                             onComplete = {
+                                hasCompletedOnboardingSession = true
                                 setOnboardingCompleted(true)
                                 homeViewModel.refresh()
                             }
