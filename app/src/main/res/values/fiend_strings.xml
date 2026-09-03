@@ -202,6 +202,8 @@
     <string name="proxy_username">Proxy username</string>
     <string name="proxy_password">Proxy password</string>
     <string name="enable_authentication">Enable authentication</string>
+    <string name="hide_navigation_bar">Immersive navigation bar</string>
+    <string name="hide_navigation_bar_desc">Hide the navigation keys and gesture guide bar for a full-screen immersive experience. Swipe from the bottom edge to reveal.</string>
 
 
     <string name="auto_radio_queue">Auto radio queue</string>
@@ -940,16 +942,24 @@
 
     <!-- Onboarding / Setup Screen -->
     <string name="welcome_to_fiend">Welcome to Fiend</string>
-    <string name="onboarding_tagline">Your personal music sanctuary. Powered by real-time recommendations and aesthetic glass design.</string>
+    <string name="onboarding_tagline">Your personal music sanctuary. Let\'s calibrate your soundscape to your exact taste.</string>
     <string name="onboarding_step_vibe">Choose your vibe</string>
-    <string name="onboarding_step_vibe_desc">Select genres and styles you enjoy so we can tune your feed.</string>
+    <string name="onboarding_step_vibe_desc">Select the genres and moods that define your music taste.</string>
+    <string name="onboarding_step_languages">Music Languages</string>
+    <string name="onboarding_step_languages_desc">Select languages you love listening to for tailored recommendations.</string>
     <string name="onboarding_step_artists">Pick favorite artists</string>
-    <string name="onboarding_step_artists_desc">Pick 3 or more artists or search for any artist you love.</string>
-    <string name="onboarding_search_artists">Search artists...</string>
+    <string name="onboarding_step_artists_desc">Choose or search artists to seed your library and Quick Picks.</string>
+    <string name="onboarding_search_artists">Search artists on YouTube Music...</string>
     <string name="onboarding_continue">Continue</string>
     <string name="onboarding_start_listening">Start Listening</string>
     <string name="onboarding_skip">Skip for now</string>
-    <string name="onboarding_curating">Curating your soundscape…</string>
+    <string name="onboarding_tuning_title">Calibrating Your Taste</string>
+    <string name="onboarding_curating">Curating your personal soundscape…</string>
+    <string name="onboarding_seeding_artists">Fetching top songs from your favorite artists…</string>
+    <string name="onboarding_logging_liked">Logging liked tracks in your database…</string>
+    <string name="onboarding_curating_quick_picks">Generating your personalized Quick Picks…</string>
+    <string name="onboarding_ready_welcome">Ready! Welcome to your sanctuary.</string>
     <string name="recommended_for_you">Recommended for you</string>
     <string name="based_on_your_taste">Based on your taste</string>
+    <string name="lyrics_loading">Searching for lyrics…</string>
 </resources>

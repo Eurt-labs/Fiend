@@ -64,6 +64,7 @@ import com.fiend.music.constants.EnableLandscapeScalingKey
 import com.fiend.music.constants.ExperimentalLyricsKey
 import com.fiend.music.constants.GridItemSize
 import com.fiend.music.constants.GridItemsSizeKey
+import com.fiend.music.constants.HideNavigationBarKey
 import com.fiend.music.constants.HidePlayerThumbnailKey
 import com.fiend.music.constants.HideStatusBarOnFullscreenKey
 import com.fiend.music.constants.LibraryFilter
@@ -220,6 +221,11 @@ fun AppearanceSettings(
         rememberPreference(
             HideStatusBarOnFullscreenKey,
             defaultValue = false,
+        )
+    val (hideNavigationBar, onHideNavigationBarChange) =
+        rememberPreference(
+            HideNavigationBarKey,
+            defaultValue = true,
         )
     val (respectAgentPositioning, onRespectAgentPositioningChange) = rememberPreference(RespectAgentPositioningKey, defaultValue = true)
     val (experimentalLyrics, onExperimentalLyricsChange) = rememberPreference(ExperimentalLyricsKey, defaultValue = true)
@@ -1548,6 +1554,28 @@ fun AppearanceSettings(
             title = stringResource(R.string.misc),
             items =
                 listOf(
+                    Material3SettingsItem(
+                        icon = painterResource(R.drawable.nav_bar),
+                        title = { Text(stringResource(R.string.hide_navigation_bar)) },
+                        description = { Text(stringResource(R.string.hide_navigation_bar_desc)) },
+                        trailingContent = {
+                            Switch(
+                                checked = hideNavigationBar,
+                                onCheckedChange = onHideNavigationBarChange,
+                                thumbContent = {
+                                    Icon(
+                                        painter =
+                                            painterResource(
+                                                id = if (hideNavigationBar) R.drawable.check else R.drawable.close,
+                                            ),
+                                        contentDescription = null,
+                                        modifier = Modifier.size(SwitchDefaults.IconSize),
+                                    )
+                                },
+                            )
+                        },
+                        onClick = { onHideNavigationBarChange(!hideNavigationBar) },
+                    ),
                     Material3SettingsItem(
                         icon = painterResource(R.drawable.nav_bar),
                         title = { Text(stringResource(R.string.default_open_tab)) },

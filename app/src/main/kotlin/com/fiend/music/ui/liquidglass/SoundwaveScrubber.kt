@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Fiend Project (C) 2026
  * Licensed under GPL-3.0 | See git history for contributors
  */
@@ -55,8 +55,8 @@ fun SoundwaveScrubber(
     isPlaying: Boolean,
     onSeek: (Long) -> Unit,
     modifier: Modifier = Modifier,
-    activeColor: Color = Color(0xFFA855F7), // Vibrant purple
-    activeColorEnd: Color = Color(0xFFEC4899), // Neon pink
+    activeColor: Color = MaterialTheme.colorScheme.primary,
+    activeColorEnd: Color = MaterialTheme.colorScheme.tertiary,
     inactiveColor: Color = Color.White.copy(alpha = 0.22f),
     textColor: Color = Color.White.copy(alpha = 0.75f),
     barCount: Int = 38,

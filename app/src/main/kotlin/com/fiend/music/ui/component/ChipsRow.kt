@@ -51,6 +51,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.fiend.music.R
 import com.fiend.music.ui.screens.OptionStats
@@ -79,6 +80,12 @@ fun <E> ChipsRow(
     ) {
         Spacer(Modifier.width(12.dp))
 
+        val primary = MaterialTheme.colorScheme.primary
+        val onPrimary = MaterialTheme.colorScheme.onPrimary
+        val surfaceContainer = MaterialTheme.colorScheme.surfaceContainerHighest
+        val onSurface = MaterialTheme.colorScheme.onSurface
+        val outline = MaterialTheme.colorScheme.outlineVariant
+
         chips.forEach { (value, label) ->
             val isSelected = currentValue == value
             val chipShape = RoundedCornerShape(20.dp)
@@ -89,15 +96,15 @@ fun <E> ChipsRow(
                         if (isSelected) {
                             Brush.horizontalGradient(
                                 listOf(
-                                    Color(0xFFA855F7).copy(alpha = 0.85f),
-                                    Color(0xFF9333EA).copy(alpha = 0.85f),
+                                    primary,
+                                    primary.copy(alpha = 0.85f),
                                 )
                             )
                         } else {
                             Brush.verticalGradient(
                                 listOf(
-                                    Color.White.copy(alpha = 0.12f),
-                                    Color.White.copy(alpha = 0.05f),
+                                    surfaceContainer.copy(alpha = 0.70f),
+                                    surfaceContainer.copy(alpha = 0.45f),
                                 )
                             )
                         }
@@ -106,8 +113,8 @@ fun <E> ChipsRow(
                         width = 1.dp,
                         brush = Brush.verticalGradient(
                             listOf(
-                                if (isSelected) Color.White.copy(alpha = 0.50f) else Color.White.copy(alpha = 0.20f),
-                                if (isSelected) Color.White.copy(alpha = 0.15f) else Color.White.copy(alpha = 0.04f),
+                                if (isSelected) Color.White.copy(alpha = 0.45f) else outline.copy(alpha = 0.40f),
+                                if (isSelected) Color.White.copy(alpha = 0.12f) else outline.copy(alpha = 0.15f),
                             )
                         ),
                         shape = chipShape
@@ -117,8 +124,10 @@ fun <E> ChipsRow(
             ) {
                 Text(
                     text = label,
-                    style = MaterialTheme.typography.labelLarge,
-                    color = if (isSelected) Color.White else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.85f)
+                    style = MaterialTheme.typography.labelLarge.copy(
+                        fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Medium
+                    ),
+                    color = if (isSelected) onPrimary else onSurface.copy(alpha = 0.85f)
                 )
             }
 
@@ -234,6 +243,9 @@ fun <Int> ChoiceChipsRow(
                         selected = currentValue == value,
                         colors = FilterChipDefaults.filterChipColors(
                             containerColor = containerColor,
+                            selectedContainerColor = MaterialTheme.colorScheme.primary,
+                            selectedLabelColor = MaterialTheme.colorScheme.onPrimary,
+                            labelColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.85f),
                         ),
                         onClick = { onValueUpdate(value) },
                         shape = RoundedCornerShape(16.dp),

@@ -149,6 +149,7 @@ import com.fiend.music.LocalPlayerConnection
 import com.fiend.music.R
 import com.fiend.music.constants.CropAlbumArtKey
 import com.fiend.music.constants.DarkModeKey
+import com.fiend.music.constants.HideNavigationBarKey
 import com.fiend.music.constants.HidePlayerThumbnailKey
 import com.fiend.music.constants.HideStatusBarOnFullscreenKey
 import com.fiend.music.constants.KeepScreenOn
@@ -166,6 +167,7 @@ import com.fiend.music.constants.SliderStyleKey
 import com.fiend.music.constants.SquigglySliderKey
 import com.fiend.music.constants.ThumbnailCornerRadius
 import com.fiend.music.constants.UseNewPlayerDesignKey
+import com.fiend.music.LocalDatabase
 import com.fiend.music.db.entities.LyricsEntity
 import com.fiend.music.extensions.metadata
 import com.fiend.music.extensions.togglePlayPause
@@ -207,6 +209,9 @@ import com.fiend.music.ui.component.Icon as MIcon
 import com.fiend.music.constants.SleepTimerDefaultKey
 import com.fiend.music.constants.SleepTimerFadeOutKey
 import com.fiend.music.constants.SleepTimerStopAfterCurrentSongKey
+import com.fiend.music.constants.ShowLyricsKey
+import com.fiend.music.lyrics.LyricsWithProvider
+import kotlinx.coroutines.withTimeoutOrNull
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -227,6 +232,7 @@ fun BottomSheetPlayer(
     val coroutineScope = rememberCoroutineScope()
     val haptic = LocalHapticFeedback.current
     val playerConnection = LocalPlayerConnection.current ?: return
+    val database = LocalDatabase.current
 
     val (useNewPlayerDesign, onUseNewPlayerDesignChange) =
         rememberPreference(
@@ -235,6 +241,7 @@ fun BottomSheetPlayer(
         )
     val (hidePlayerThumbnail, onHidePlayerThumbnailChange) = rememberPreference(HidePlayerThumbnailKey, false)
     val (hideStatusBarOnFullscreen) = rememberPreference(HideStatusBarOnFullscreenKey, false)
+    val (hideNavigationBar) = rememberPreference(HideNavigationBarKey, defaultValue = true)
     val cropAlbumArt by rememberPreference(CropAlbumArtKey, false)
 
     var showInlineLyrics by rememberSaveable {
@@ -256,9 +263,11 @@ fun BottomSheetPlayer(
 
     val isSystemInDarkTheme = isSystemInDarkTheme()
     val darkTheme by rememberEnumPreference(DarkModeKey, defaultValue = DarkMode.OFF)
+    
     val useDarkTheme =
-        remember(darkTheme, isSystemInDarkTheme) {
-            if (darkTheme == DarkMode.AUTO) isSystemInDarkTheme else darkTheme == DarkMode.ON
+        when (playerBackground) {
+            PlayerBackgroundStyle.BLUR, PlayerBackgroundStyle.GRADIENT -> true
+            PlayerBackgroundStyle.DEFAULT -> if (darkTheme == DarkMode.AUTO) isSystemInDarkTheme else darkTheme == DarkMode.ON
         }
 
     val shouldUseDarkButtonColors =
@@ -273,7 +282,7 @@ fun BottomSheetPlayer(
     val isKeepScreenOn by rememberPreference(KeepScreenOn, false)
     val keepScreenOn = isPlaying && isKeepScreenOn
 
-    DisposableEffect(playerBackground, state.isExpanded, useDarkTheme, keepScreenOn, isFullScreen, hideStatusBarOnFullscreen) {
+    DisposableEffect(playerBackground, state.isExpanded, useDarkTheme, keepScreenOn, isFullScreen, hideStatusBarOnFullscreen, hideNavigationBar) {
         val window = (context as? android.app.Activity)?.window
         if (window != null && state.isExpanded) {
             val insetsController = WindowCompat.getInsetsController(window, window.decorView)
@@ -289,6 +298,11 @@ fun BottomSheetPlayer(
                 insetsController.show(WindowInsetsCompat.Type.statusBars())
             }
 
+            if (hideNavigationBar) {
+                insetsController.systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+                insetsController.hide(WindowInsetsCompat.Type.navigationBars())
+            }
+
             if (keepScreenOn && state.isExpanded) {
                 window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
             } else {
@@ -302,6 +316,12 @@ fun BottomSheetPlayer(
                 insetsController.isAppearanceLightStatusBars = !useDarkTheme
                 insetsController.isAppearanceLightNavigationBars = !useDarkTheme
                 insetsController.show(WindowInsetsCompat.Type.statusBars())
+                if (hideNavigationBar) {
+                    insetsController.systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+                    insetsController.hide(WindowInsetsCompat.Type.navigationBars())
+                } else {
+                    insetsController.show(WindowInsetsCompat.Type.navigationBars())
+                }
                 window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
             }
         }
@@ -332,6 +352,55 @@ fun BottomSheetPlayer(
     val canSkipNext by playerConnection.canSkipNext.collectAsStateWithLifecycle()
     val isMuted by playerConnection.isMuted.collectAsStateWithLifecycle()
     val shuffleModeEnabled by playerConnection.shuffleModeEnabled.collectAsStateWithLifecycle()
+    val currentLyrics by playerConnection.currentLyrics.collectAsStateWithLifecycle(initialValue = null)
+
+    LaunchedEffect(showInlineLyrics) {
+        context.safeDataStoreEdit { it[ShowLyricsKey] = showInlineLyrics }
+    }
+
+    // Active Lyrics Fetcher: ensures lyrics are fetched as soon as track starts or lyrics is expanded,
+    // and terminates gracefully if not found or on network timeout so the loader never spins endlessly.
+    LaunchedEffect(mediaMetadata?.id, showInlineLyrics, currentLyrics) {
+        val currentMeta = mediaMetadata
+        if (currentMeta != null && (showInlineLyrics || currentLyrics == null)) {
+            val currentInDb = withContext(Dispatchers.IO) {
+                database.lyrics(currentMeta.id).first()
+            }
+            if (currentInDb == null) {
+                withContext(Dispatchers.IO) {
+                    try {
+                        val entryPoint = EntryPointAccessors.fromApplication(
+                            context.applicationContext,
+                            com.fiend.music.di.LyricsHelperEntryPoint::class.java,
+                        )
+                        val lyricsHelper = entryPoint.lyricsHelper()
+                        val fetchedLyricsWithProvider = withTimeoutOrNull(10000L) {
+                            lyricsHelper.getLyrics(currentMeta)
+                        } ?: LyricsWithProvider(LyricsEntity.LYRICS_NOT_FOUND, "")
+                        database.query {
+                            upsert(
+                                LyricsEntity(
+                                    id = currentMeta.id,
+                                    lyrics = fetchedLyricsWithProvider.lyrics,
+                                    provider = fetchedLyricsWithProvider.provider,
+                                )
+                            )
+                        }
+                    } catch (e: Exception) {
+                        database.query {
+                            upsert(
+                                LyricsEntity(
+                                    id = currentMeta.id,
+                                    lyrics = LyricsEntity.LYRICS_NOT_FOUND,
+                                    provider = "",
+                                )
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
 
     val sliderStyle by rememberEnumPreference(SliderStyleKey, SliderStyle.DEFAULT)
     val squigglySlider by rememberPreference(SquigglySliderKey, defaultValue = false)
@@ -1220,10 +1289,22 @@ fun BottomSheetPlayer(
                         )
                     }
 
-                    // Center Lyrics Hill
+                    // Center Lyrics Hill: Displays mini live lyrics line-by-line with Apple Music animation
                     BottomLyricsHill(
+                        modifier = Modifier
+                            .weight(1f)
+                            .height(44.dp)
+                            .padding(horizontal = 10.dp),
                         contentColor = TextBackgroundColor,
-                        onClick = { showInlineLyrics = true },
+                        lyrics = currentLyrics?.lyrics,
+                        positionProvider = {
+                            sliderPosition ?: if (isCasting) castPosition else playerConnection.player.currentPosition
+                        },
+                        isPlaying = effectiveIsPlaying,
+                        onClick = {
+                            haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                            showInlineLyrics = true
+                        },
                     )
 
                     // Right Repeat button
@@ -1392,26 +1473,94 @@ fun BottomSheetPlayer(
                                     ),
                                 contentAlignment = Alignment.Center,
                             ) {
-                                val currentLyrics by playerConnection.currentLyrics.collectAsStateWithLifecycle(initialValue = null)
                                 val lyrics = remember(currentLyrics) { currentLyrics?.lyrics?.trim() }
 
                                 when {
                                     lyrics == null -> {
-                                        androidx.compose.material3.CircularProgressIndicator(
-                                            color = Color.White,
-                                            modifier = Modifier.size(36.dp),
-                                        )
+                                        Column(
+                                            horizontalAlignment = Alignment.CenterHorizontally,
+                                            verticalArrangement = Arrangement.Center,
+                                        ) {
+                                            androidx.compose.material3.CircularProgressIndicator(
+                                                color = Color.White,
+                                                strokeWidth = 3.dp,
+                                                modifier = Modifier.size(36.dp),
+                                            )
+                                            Spacer(Modifier.height(14.dp))
+                                            Text(
+                                                text = stringResource(R.string.lyrics_loading),
+                                                style = MaterialTheme.typography.bodyMedium,
+                                                color = Color.White.copy(alpha = 0.70f),
+                                                textAlign = TextAlign.Center,
+                                            )
+                                        }
                                     }
 
-                                    lyrics == LyricsEntity.LYRICS_NOT_FOUND -> {
-                                        Text(
-                                            text = stringResource(R.string.lyrics_not_found),
-                                            style = MaterialTheme.typography.bodyLarge.copy(
-                                                fontWeight = FontWeight.Medium
-                                            ),
-                                            color = Color.White.copy(alpha = 0.75f),
-                                            textAlign = TextAlign.Center,
-                                        )
+                                    lyrics == LyricsEntity.LYRICS_NOT_FOUND || lyrics.isBlank() -> {
+                                        Column(
+                                            horizontalAlignment = Alignment.CenterHorizontally,
+                                            verticalArrangement = Arrangement.Center,
+                                            modifier = Modifier.padding(horizontal = 24.dp),
+                                        ) {
+                                            Text(
+                                                text = stringResource(R.string.lyrics_not_found),
+                                                style = MaterialTheme.typography.titleMedium.copy(
+                                                    fontWeight = FontWeight.SemiBold,
+                                                ),
+                                                color = Color.White.copy(alpha = 0.85f),
+                                                textAlign = TextAlign.Center,
+                                            )
+                                            Spacer(Modifier.height(14.dp))
+                                            Box(
+                                                modifier = Modifier
+                                                    .clip(RoundedCornerShape(20.dp))
+                                                    .background(Color.White.copy(alpha = 0.15f))
+                                                    .border(1.dp, Color.White.copy(alpha = 0.25f), RoundedCornerShape(20.dp))
+                                                    .clickable {
+                                                        mediaMetadata?.let { meta ->
+                                                            coroutineScope.launch(Dispatchers.IO) {
+                                                                try {
+                                                                    database.query {
+                                                                        currentLyrics?.let(::delete)
+                                                                    }
+                                                                    val entryPoint = EntryPointAccessors.fromApplication(
+                                                                        context.applicationContext,
+                                                                        com.fiend.music.di.LyricsHelperEntryPoint::class.java,
+                                                                    )
+                                                                    val lyricsHelper = entryPoint.lyricsHelper()
+                                                                    val fetched = withTimeoutOrNull(10000L) {
+                                                                        lyricsHelper.getLyrics(meta)
+                                                                    } ?: LyricsWithProvider(LyricsEntity.LYRICS_NOT_FOUND, "")
+                                                                    database.query {
+                                                                        upsert(LyricsEntity(meta.id, fetched.lyrics, fetched.provider))
+                                                                    }
+                                                                } catch (e: Exception) {
+                                                                    database.query {
+                                                                        upsert(LyricsEntity(meta.id, LyricsEntity.LYRICS_NOT_FOUND, ""))
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                    .padding(horizontal = 18.dp, vertical = 8.dp),
+                                                contentAlignment = Alignment.Center,
+                                            ) {
+                                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                                    Icon(
+                                                        painter = painterResource(R.drawable.sync),
+                                                        contentDescription = null,
+                                                        tint = Color.White,
+                                                        modifier = Modifier.size(16.dp),
+                                                    )
+                                                    Spacer(Modifier.width(6.dp))
+                                                    Text(
+                                                        text = stringResource(R.string.retry),
+                                                        style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
+                                                        color = Color.White,
+                                                    )
+                                                }
+                                            }
+                                        }
                                     }
 
                                     else -> {
@@ -1820,8 +1969,7 @@ fun InlineLyricsView(
 
     LaunchedEffect(mediaMetadata?.id, currentLyrics) {
         if (mediaMetadata != null && currentLyrics == null) {
-            delay(500)
-            coroutineScope.launch(Dispatchers.IO) {
+            withContext(Dispatchers.IO) {
                 try {
                     val entryPoint =
                         EntryPointAccessors.fromApplication(
@@ -1829,12 +1977,16 @@ fun InlineLyricsView(
                             com.fiend.music.di.LyricsHelperEntryPoint::class.java,
                         )
                     val lyricsHelper = entryPoint.lyricsHelper()
-                    val fetchedLyricsWithProvider = lyricsHelper.getLyrics(mediaMetadata)
+                    val fetchedLyricsWithProvider = withTimeoutOrNull(10000L) {
+                        lyricsHelper.getLyrics(mediaMetadata)
+                    } ?: LyricsWithProvider(LyricsEntity.LYRICS_NOT_FOUND, "")
                     database.query {
                         upsert(LyricsEntity(mediaMetadata.id, fetchedLyricsWithProvider.lyrics, fetchedLyricsWithProvider.provider))
                     }
                 } catch (e: Exception) {
-                    // Handle error
+                    database.query {
+                        upsert(LyricsEntity(mediaMetadata.id, LyricsEntity.LYRICS_NOT_FOUND, ""))
+                    }
                 }
             }
         }

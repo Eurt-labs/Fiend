@@ -109,6 +109,9 @@ import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
 import androidx.core.util.Consumer
 import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
+import com.fiend.music.constants.HideNavigationBarKey
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.coroutineScope
@@ -369,12 +372,33 @@ class MainActivity : FragmentActivity() {
         }
     }
 
+    override fun onWindowFocusChanged(hasFocus: Boolean) {
+        super.onWindowFocusChanged(hasFocus)
+        if (hasFocus) {
+            val hideNavBar = dataStore.get(HideNavigationBarKey, true)
+            applyNavigationBarVisibility(hideNavBar)
+        }
+    }
+
+    fun applyNavigationBarVisibility(hide: Boolean) {
+        val insetsController = WindowCompat.getInsetsController(window, window.decorView)
+        if (hide) {
+            insetsController.systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+            insetsController.hide(WindowInsetsCompat.Type.navigationBars())
+        } else {
+            insetsController.show(WindowInsetsCompat.Type.navigationBars())
+        }
+    }
+
     @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
     @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         window.decorView.layoutDirection = View.LAYOUT_DIRECTION_LTR
         WindowCompat.setDecorFitsSystemWindows(window, false)
+
+        val hideNavBar = dataStore.get(HideNavigationBarKey, true)
+        applyNavigationBarVisibility(hideNavBar)
 
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
             val locale =
@@ -527,6 +551,11 @@ class MainActivity : FragmentActivity() {
 
         val enableDynamicTheme by rememberPreference(DynamicThemeKey, defaultValue = true)
         val enableHighRefreshRate by rememberPreference(EnableHighRefreshRateKey, defaultValue = true)
+        val (hideNavigationBar) = rememberPreference(HideNavigationBarKey, defaultValue = true)
+
+        LaunchedEffect(hideNavigationBar) {
+            applyNavigationBarVisibility(hideNavigationBar)
+        }
 
         LaunchedEffect(enableHighRefreshRate) {
             val window = this@MainActivity.window

@@ -58,22 +58,147 @@ import com.fiend.music.db.entities.LyricsEntity
 import com.fiend.music.models.MediaMetadata
 import com.fiend.music.ui.component.Lyrics
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.core.FastOutLinearInEasing
+import androidx.compose.animation.core.LinearOutSlowInEasing
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
+import androidx.compose.animation.togetherWith
+import androidx.compose.foundation.basicMarquee
+import androidx.compose.foundation.layout.defaultMinSize
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.text.style.TextOverflow
+import com.fiend.music.lyrics.LyricsUtils
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
+
+data class MiniLyricsDisplay(
+    val text: String,
+    val isLive: Boolean,
+    val isLoading: Boolean = false,
+)
+
 /**
  * Bottom "Lyrics Hill" Composable matching Image 1:
  * Rises up smoothly from the bottom between Shuffle and Repeat controls,
  * with an organic S-curve dome, subtle translucent glass fill, highlight stroke,
- * and bold "Lyrics" label in the center.
+ * and live line-by-line mini lyrics with Apple Music spring animation transitions.
+ * Tapping opens the expanded fullscreen lyrics view.
  */
 @Composable
 fun BottomLyricsHill(
     modifier: Modifier = Modifier,
     contentColor: Color = Color.White,
+    lyrics: String? = null,
+    positionProvider: () -> Long = { 0L },
+    isPlaying: Boolean = false,
     onClick: () -> Unit,
 ) {
+    val playerConnection = LocalPlayerConnection.current
+    val currentLyricsEntity by playerConnection?.currentLyrics?.collectAsStateWithLifecycle(initialValue = null)
+        ?: remember { mutableStateOf<LyricsEntity?>(null) }
+    val effectiveLyrics = lyrics ?: currentLyricsEntity?.lyrics?.trim()
+
+    val effectivePositionProvider: () -> Long = remember(positionProvider, playerConnection) {
+        {
+            val explicit = positionProvider()
+            if (explicit != 0L) explicit else (playerConnection?.player?.currentPosition ?: 0L)
+        }
+    }
+
+    val effectiveIsPlaying = isPlaying || (playerConnection?.player?.isPlaying == true)
+
+    val parsedLines = remember(effectiveLyrics) {
+        if (effectiveLyrics.isNullOrBlank() || effectiveLyrics == LyricsEntity.LYRICS_NOT_FOUND) {
+            emptyList()
+        } else if (effectiveLyrics.startsWith("[")) {
+            LyricsUtils.parseLyrics(effectiveLyrics).filter { it.text.isNotBlank() }
+        } else {
+            emptyList()
+        }
+    }
+
+    var currentLineIndex by remember { mutableIntStateOf(-1) }
+
+    LaunchedEffect(parsedLines, effectiveIsPlaying, effectiveLyrics) {
+        if (parsedLines.isEmpty()) {
+            currentLineIndex = -1
+            return@LaunchedEffect
+        }
+        while (isActive) {
+            val pos = effectivePositionProvider()
+            val idx = LyricsUtils.findCurrentLineIndex(parsedLines, pos)
+            if (idx != currentLineIndex) {
+                currentLineIndex = idx
+            }
+            delay(50)
+        }
+    }
+
+    val lyricsLoadingStr = stringResource(R.string.lyrics_loading)
+    val lyricsDefaultStr = stringResource(R.string.lyrics)
+
+    val displayState = remember(effectiveLyrics, parsedLines, currentLineIndex) {
+        when {
+            effectiveLyrics == null -> MiniLyricsDisplay(
+                text = lyricsLoadingStr,
+                isLive = false,
+                isLoading = true,
+            )
+            effectiveLyrics == LyricsEntity.LYRICS_NOT_FOUND || effectiveLyrics.isBlank() -> MiniLyricsDisplay(
+                text = lyricsDefaultStr,
+                isLive = false,
+                isLoading = false,
+            )
+            parsedLines.isNotEmpty() -> {
+                if (currentLineIndex in parsedLines.indices) {
+                    val lineText = parsedLines[currentLineIndex].text.trim()
+                    MiniLyricsDisplay(
+                        text = if (lineText.isNotBlank()) lineText else "♪",
+                        isLive = true,
+                        isLoading = false,
+                    )
+                } else if (currentLineIndex < 0) {
+                    MiniLyricsDisplay(
+                        text = "♪",
+                        isLive = true,
+                        isLoading = false,
+                    )
+                } else {
+                    MiniLyricsDisplay(
+                        text = lyricsDefaultStr,
+                        isLive = false,
+                        isLoading = false,
+                    )
+                }
+            }
+            else -> {
+                // Unsynced plain text lyrics: show first non-blank line
+                val firstLine = effectiveLyrics.lines().firstOrNull { it.isNotBlank() }?.trim()
+                MiniLyricsDisplay(
+                    text = firstLine ?: lyricsDefaultStr,
+                    isLive = true,
+                    isLoading = false,
+                )
+            }
+        }
+    }
+
     Box(
         modifier = modifier
-            .width(140.dp)
-            .height(42.dp)
+            .defaultMinSize(minWidth = 140.dp)
+            .height(44.dp)
             .clickable(
                 interactionSource = remember { MutableInteractionSource() },
                 indication = null,
@@ -87,9 +212,9 @@ fun BottomLyricsHill(
             val startX = 0f
             val endX = w
             val midX = w / 2f
-            val crestWidth = w * 0.45f
-            val leftCrest = midX - crestWidth / 2f
-            val rightCrest = midX + crestWidth / 2f
+            val shoulderWidth = 24.dp.toPx()
+            val leftCrest = shoulderWidth.coerceAtMost(midX - 24.dp.toPx())
+            val rightCrest = (w - shoulderWidth).coerceAtLeast(midX + 24.dp.toPx())
             val peakY = 2.dp.toPx()
 
             val curvePath = Path().apply {
@@ -119,8 +244,8 @@ fun BottomLyricsHill(
                 path = fillPath,
                 brush = Brush.verticalGradient(
                     listOf(
-                        contentColor.copy(alpha = 0.20f),
-                        contentColor.copy(alpha = 0.06f),
+                        contentColor.copy(alpha = 0.22f),
+                        contentColor.copy(alpha = 0.07f),
                     ),
                     startY = peakY,
                     endY = h,
@@ -132,8 +257,8 @@ fun BottomLyricsHill(
                 path = curvePath,
                 brush = Brush.verticalGradient(
                     listOf(
-                        contentColor.copy(alpha = 0.48f),
-                        contentColor.copy(alpha = 0.12f),
+                        contentColor.copy(alpha = 0.52f),
+                        contentColor.copy(alpha = 0.15f),
                     ),
                     startY = peakY,
                     endY = h,
@@ -145,27 +270,88 @@ fun BottomLyricsHill(
             )
         }
 
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Center,
-            modifier = Modifier.padding(top = 4.dp),
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = 14.dp, vertical = 2.dp),
+            contentAlignment = Alignment.Center,
         ) {
-            Icon(
-                painter = painterResource(R.drawable.expand_less),
-                contentDescription = null,
-                tint = contentColor.copy(alpha = 0.85f),
-                modifier = Modifier.size(16.dp)
-            )
-            Spacer(Modifier.width(4.dp))
-            Text(
-                text = stringResource(R.string.lyrics),
-                style = MaterialTheme.typography.labelLarge.copy(
-                    fontWeight = FontWeight.Bold,
-                    letterSpacing = 0.5.sp,
-                    fontSize = 13.sp,
-                ),
-                color = contentColor.copy(alpha = 0.95f),
-            )
+            AnimatedContent(
+                targetState = displayState,
+                transitionSpec = {
+                    (slideInVertically(
+                        animationSpec = spring(
+                            dampingRatio = 0.82f,
+                            stiffness = Spring.StiffnessMediumLow,
+                        ),
+                        initialOffsetY = { fullHeight -> (fullHeight * 0.8f).toInt() },
+                    ) + fadeIn(
+                        animationSpec = tween(durationMillis = 260, easing = LinearOutSlowInEasing),
+                    ) + scaleIn(
+                        initialScale = 0.90f,
+                        animationSpec = spring(
+                            dampingRatio = 0.82f,
+                            stiffness = Spring.StiffnessMediumLow,
+                        ),
+                    )).togetherWith(
+                        slideOutVertically(
+                            animationSpec = tween(durationMillis = 200, easing = FastOutLinearInEasing),
+                            targetOffsetY = { fullHeight -> -(fullHeight * 0.8f).toInt() },
+                        ) + fadeOut(
+                            animationSpec = tween(durationMillis = 180),
+                        ) + scaleOut(
+                            targetScale = 0.95f,
+                            animationSpec = tween(durationMillis = 180),
+                        ),
+                    )
+                },
+                label = "AppleMusicMiniLyrics",
+                contentAlignment = Alignment.Center,
+            ) { state ->
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center,
+                    modifier = Modifier.fillMaxWidth(),
+                ) {
+                    if (state.isLoading) {
+                        CircularProgressIndicator(
+                            color = contentColor.copy(alpha = 0.80f),
+                            strokeWidth = 2.dp,
+                            modifier = Modifier.size(12.dp),
+                        )
+                        Spacer(Modifier.width(6.dp))
+                    } else {
+                        Icon(
+                            painter = painterResource(R.drawable.expand_less),
+                            contentDescription = null,
+                            tint = contentColor.copy(alpha = if (state.isLive) 0.85f else 0.75f),
+                            modifier = Modifier.size(15.dp),
+                        )
+                        Spacer(Modifier.width(4.dp))
+                    }
+                    Text(
+                        text = state.text,
+                        style = MaterialTheme.typography.labelLarge.copy(
+                            fontWeight = if (state.isLive) FontWeight.Bold else FontWeight.SemiBold,
+                            letterSpacing = if (state.isLive) 0.2.sp else 0.5.sp,
+                            fontSize = 13.sp,
+                        ),
+                        color = contentColor.copy(alpha = if (state.isLive) 0.98f else 0.85f),
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = if (state.isLive && state.text != "♪") {
+                            Modifier.basicMarquee(
+                                iterations = Int.MAX_VALUE,
+                                initialDelayMillis = 1400,
+                                velocity = 35.dp,
+                            )
+                        } else {
+                            Modifier
+                        },
+                        textAlign = TextAlign.Center,
+                    )
+                }
+            }
         }
     }
 }
@@ -342,7 +528,7 @@ fun ExpandedLyricsCard(
                     ContainedLoadingIndicator()
                 }
 
-                lyrics == LyricsEntity.LYRICS_NOT_FOUND -> {
+                lyrics == LyricsEntity.LYRICS_NOT_FOUND || lyrics.isBlank() -> {
                     Text(
                         text = stringResource(R.string.lyrics_not_found),
                         style = MaterialTheme.typography.bodyLarge.copy(

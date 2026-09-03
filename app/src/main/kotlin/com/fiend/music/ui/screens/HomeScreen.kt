@@ -1832,10 +1832,10 @@ fun HomeScreen(
                                                             .size(36.dp)
                                                             .clip(CircleShape)
                                                             .background(
-                                                                Brush.radialGradient(
+                                                                Brush.linearGradient(
                                                                     listOf(
-                                                                        Color(0xFFA855F7),
-                                                                        Color(0xFF9333EA),
+                                                                        MaterialTheme.colorScheme.primary,
+                                                                        MaterialTheme.colorScheme.primary.copy(alpha = 0.85f),
                                                                     )
                                                                 )
                                                             )
@@ -1861,7 +1861,7 @@ fun HomeScreen(
                                                                 if (isThisSongPlaying) R.drawable.pause else R.drawable.play
                                                             ),
                                                             contentDescription = null,
-                                                            tint = MaterialTheme.colorScheme.onSurface,
+                                                            tint = MaterialTheme.colorScheme.onPrimary,
                                                             modifier = Modifier.size(18.dp),
                                                         )
                                                     }
