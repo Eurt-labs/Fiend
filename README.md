@@ -130,8 +130,7 @@ The compiled APK will be located at:
 ## 📜 Credits & Acknowledgements
 
 - **Dhruv Saraswat** ([Eurt-labs](https://github.com/Eurt-labs)) — Creator & Lead Developer of Fiend
-- **Metrolist Team** ([Metrolist](https://github.com/MetrolistGroup/Metrolist)) — Upstream foundation and design inspirations
-- **InnerTune & ViMusic** — Pioneer open-source YouTube Music implementations
+- **InnerTune & ViMusic** — Pioneer open-source YTM implementations
 - **LRCLIB & Paxsenix** — Lyric provider APIs
 
 ---
