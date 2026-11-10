@@ -113,7 +113,7 @@ fun FiendBrandSplashScreen(
                     contentAlignment = Alignment.Center
                 ) {
                     androidx.compose.foundation.Image(
-                        painter = painterResource(id = R.drawable.ic_launcher_logo),
+                        painter = painterResource(id = R.drawable.fiend_logo),
                         contentDescription = "Fiend Logo",
                         modifier = Modifier.size(72.dp)
                     )
