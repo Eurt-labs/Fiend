@@ -1,111 +1,77 @@
 <div align="center">
 
-<img src="Fiend_banner_v2_1440p.png" alt="Fiend Banner" width="100%" style="border-radius: 16px;" />
+<img src="Fiend_banner_v2_1440p.png" alt="Fiend Banner" width="100%" style="border-radius: 18px;" />
 
-<h1>Fiend</h1>
+# Fiend
 
-**Simple Android YouTube Music client with Material UI, Liquid Glass, Bit-Perfect playback, Automix, Lossless addons & advanced audiophile features.**
+**Modern, audiophile-grade YouTube Music client for Android with Liquid Glass aesthetics, AMOLED Obsidian styling, and Bit-Perfect audio.**
 
 <br/>
 
-<p align="center">
-  <a href="https://t.me/fiend_music" target="_blank"><img src="docs/badges/btn_telegram_support.svg" alt="Telegram Support" height="42" /></a>
-  <a href="https://t.me/eurtXacro" target="_blank"><img src="docs/badges/btn_telegram_channel.svg" alt="Telegram Channel" height="42" /></a>
-</p>
+[![Version](https://img.shields.io/badge/Release-v2.1.0-00D2FF?style=for-the-badge&logo=android&logoColor=white)](https://github.com/Eurt-labs/Fiend/releases)
+[![Telegram Support](https://img.shields.io/badge/Telegram-Support-26A5E4?style=for-the-badge&logo=telegram&logoColor=white)](https://t.me/fiend_music)
+[![Telegram Channel](https://img.shields.io/badge/Eurt%20x%20ACRO-Channel-0088cc?style=for-the-badge&logo=telegram&logoColor=white)](https://t.me/eurtXacro)
+[![Desktop Client](https://img.shields.io/badge/Fiend-Desktop-6366F1?style=for-the-badge&logo=electron&logoColor=white)](https://github.com/acro777x/Fiend-Desktop)
+[![Ecosystem](https://img.shields.io/badge/Stash-Ecosystem-10B981?style=for-the-badge&logo=github&logoColor=white)](https://github.com/Eurt-labs/Stash)
 
-<p align="center">
-  <a href="https://trendshift.io/repositories/197973?utm_source=trendshift-badge&amp;utm_medium=badge&amp;utm_campaign=badge-trendshift-197973" target="_blank" rel="noopener noreferrer">
-    <img src="https://trendshift.io/api/badge/trendshift/repositories/197973/daily?language=Kotlin" alt="Eurt-labs%2FFiend-Native | Trendshift" width="250" height="55" />
-  </a>
-  &nbsp;
-  <a href="https://trendshift.io/repositories/197973?utm_source=trendshift-badge&amp;utm_medium=badge&amp;utm_campaign=badge-trendshift-197973" target="_blank" rel="noopener noreferrer">
-    <img src="https://trendshift.io/api/badge/trendshift/repositories/197973/weekly?language=Kotlin" alt="Eurt-labs%2FFiend-Native | Trendshift" width="250" height="55" />
-  </a>
-</p>
 </div>
 
 ---
 
+## ✦ Highlights
 
+Fiend is an open-source, high-performance music client designed for speed, visual elegance, and uncompromising audio fidelity. Crafted by **Eurt Labs** and **ACRO**, Fiend combines responsive Material 3 Expressive architecture with fluid backdrop refraction, deep AMOLED Obsidian black surfaces, and studio-grade sound processing.
 
-
-## Overview
-
-Fiend is a fast, native YouTube Music client for Android that looks great and sounds even better. Built with Material 3 Expressive and Liquid Glass UI, it gives you a clean, fluid design that adapts to your music.
-
-For audio lovers, Fiend packs Bit-Perfect USB DAC output, Lossless FLAC addon support, AutoEQ headphone presets with parametric EQ, smooth Automix transitions, Spotify Canvas & integration, and real-time synced lyrics, all in a lightweight app.
+- 💎 **Liquid Glass UI & AMOLED Obsidian Theme** — Glassmorphic cards, adaptive real-time blur shaders, fluid spring physics, and neon electric cyan accents.
+- 🎚️ **Bit-Perfect Audiophile Engine** — Direct USB DAC hardware bypass, 15-band parametric equalizer, and AutoEQ target profiles for over 2,500 headphones and IEMs.
+- 🔄 **Resilient Playback** — Built-in auto-reconnection and exponential chunk retry to eliminate mid-song stream dropouts on high-speed connections.
+- 🎤 **Millisecond-Synced Lyrics** — Real-time live lyrics with dynamic word animations, Romanization for non-Latin alphabets, and interactive share cards.
+- 👥 **Fiend Jam** — Real-time collaborative listening sessions with friends over ultra-low-latency WebSocket relays.
+- 📥 **Offline & Background Playback** — Cache tracks, download high-bitrate audio with embedded cover art, and enjoy seamless background lockscreen controls.
 
 ---
 
-
-## Features
+## ✦ Features Matrix
 
 <table>
   <tr>
     <td width="50%" valign="top">
 
-#### Playback
-- Stream any track or video from YouTube Music
-- Background playback with lockscreen & Android Auto controls
-- High-res audio downloads with embedded tags & `.lrc` lyrics
-- Download & cache for offline listening
-- Skip silence & sleep timer
+### 🎧 Audio & Engine
+- **Bit-Perfect Audio:** Native USB Audio Driver routing to DACs without Android OS audio mixer resample degradation.
+- **Parametric EQ & AutoEQ:** Calibrated frequency responses for hundreds of headphone models with customized peaking and shelving filters.
+- **Modular Addons:** Hi-Res 24-bit FLAC support via modular lossless streaming pipelines.
+- **Automix & Crossfade:** Intelligent tempo-matched track transitions and configurable crossfade intervals.
+- **Dynamic Volume:** ReplayGain and LUFS loudness normalization to protect hearing across diverse masters.
 
 </td>
     <td width="50%" valign="top">
 
-#### Audio
-- Bit-Perfect USB DAC output (direct hardware bypass)
-- Lossless FLAC addon support (up to 24-bit Hi-Res)
-- 15-band Parametric Equalizer & AutoEQ headphone presets
-- Smart Automix transitions & smooth crossfade
-- Audio normalization (ReplayGain / LUFS)
-- Real-time tempo & pitch control
+### 🎨 Visuals & Design
+- **Liquid Glass Architecture:** Real-time runtime blur backdrops with dynamic refraction shaders.
+- **AMOLED Obsidian Signature:** Deep `#050811` dark surface paired with radiant `#00D2FF` electric cyan and `#818CF8` neon violet accents.
+- **Customizable App Icons:** High-contrast launcher emblems including Original Signature, Desktop Blue, Pure White, and Obsidian Black.
+- **Fluid Micro-Animations:** Staggered splash screen entrance with responsive equalizer bars and pulsing ambient glow.
 
 </td>
   </tr>
   <tr>
     <td width="50%" valign="top">
 
-#### Lyrics & Discovery
-- Live millisecond-synchronized lyrics (LRCLIB)
-- Lyrics romanization for non-Latin scripts (Japanese, Korean, etc.)
-- Multi-language lyrics translation
-- Spotify Canvas & animated video backgrounds (Apple Music & Tidal)
-- Personalized quick picks, mood radios & genre discovery
-- Search songs, albums, artists, videos, and playlists
+### 🔍 Discovery & Library
+- **YouTube Music Catalog:** Unlimited access to tracks, full albums, live sessions, remixes, and curated playlists.
+- **Spotify Integration:** Import public playlists, view Spotify Canvas animations, and map favorite songs seamlessly.
+- **Intelligent Radio & Mixes:** Contextual mood selectors, taste-seeded suggestions, and automated endless queues.
+- **Tag Editor & Metadata:** Edit ID3 metadata, embedded lyrics, and custom high-resolution album artwork.
 
 </td>
     <td width="50%" valign="top">
 
-#### Library & Account
-- Full library management & offline cached library
-- Spotify Integration (Account login, Liked Songs sync & deep links)
-- Import public playlists from Spotify & Apple Music
-- YouTube Music account login & bidirectional sync
-- Local & cloud playlists with custom reordering
-- Custom audio tag editing & cover art selection
-
-</td>
-  </tr>
-  <tr>
-    <td width="50%" valign="top">
-
-#### Social
-- Listen together with friends in real-time
-- Built-in Last.fm scrobbler with background tracking
-- Safe Discord Rich Presence with live album art
-- Export and share lyrics as aesthetic quote cards
-
-</td>
-    <td width="50%" valign="top">
-
-#### Interface
-- Material 3 Expressive & Liquid Glass UI
-- Real-time backdrop refraction shaders
-- Dynamic Monet theming + 19 preset color palettes
-- Light, Dark, Pure Black (AMOLED), and Dynamic modes
-- Interactive home screen widgets & fluid tactile haptics
+### 🌐 Social & Ecosystem
+- **Fiend Jam Sessions:** Host or join live music rooms with friends and synchronized queue management.
+- **Companion Ecosystem:** Direct ecosystem bridge to [Stash](https://github.com/Eurt-labs/Stash) and [Fiend Desktop](https://github.com/acro777x/Fiend-Desktop).
+- **Update Radar:** Automatic in-app update checks tracking official GitHub releases.
+- **Privacy First:** Zero tracking, zero analytics telemetry, and entirely open-source.
 
 </td>
   </tr>
@@ -113,115 +79,71 @@ For audio lovers, Fiend packs Bit-Perfect USB DAC output, Lossless FLAC addon su
 
 ---
 
+## ✦ Downloads & Installation
 
+### Android APK
 
-## Getting Started
+| Variant | Channel | Link | Minimum System |
+|:---|:---|:---|:---|
+| **Universal Release** | Stable | [Download Fiend v2.1.0](https://github.com/Eurt-labs/Fiend/releases) | Android 7.0+ (API 24+) |
+| **Desktop Companion** | Multiplatform | [Fiend Desktop](https://github.com/acro777x/Fiend-Desktop) | Windows / Linux / macOS |
 
-### Installation
-
-| Channel | Source | Compatibility |
-|:---|:---|:---|
-| **Stable Release** | [GitHub Releases](https://github.com/Eurt-labs/Fiend/releases) | Recommended for all users • Android 7.0+ (API 24+) |
-| **Nightly Builds** | [GitHub Actions](https://github.com/Eurt-labs/Fiend/actions) | Latest automated builds with bleeding-edge features |
-| **Desktop App** | [Fiend-Desktop](https://github.com/acro777x/Fiend-Desktop) | Official desktop client for Windows, macOS & Linux |
-
-### Quick Setup
-
-1. Install the APK on your Android device.
-2. *(Optional)* Navigate to **Settings → Audio** to configure:
-   - **Bit-Perfect Output:** Enable exclusive USB DAC mode for bit-perfect audio.
-   - **AutoEQ Presets:** Search for your headphones/IEMs to apply calibrated parametric EQ curves.
-   - **Lossless Addons:** Enable the modular addon service for 24-bit Hi-Res FLAC playback.
-3. Start streaming music, listening to customized radios, and enjoying synced lyrics!
+#### Quick Start:
+1. Download the latest `app-release.apk` from [Releases](https://github.com/Eurt-labs/Fiend/releases).
+2. Install on your Android device (ensure "Install from unknown sources" is enabled if prompted).
+3. *(Optional)* Head to **Settings → Audio & Engine** to enable **Bit-Perfect DAC output** or choose an **AutoEQ** preset for your headphones.
 
 ---
 
-## Building from Source
+## ✦ Building from Source
 
-### Prerequisites
-- **JDK:** OpenJDK 17 or higher
-- **Android SDK:** API Level 34+ with CMake & Android NDK installed (for native audio C++ engine & USB driver)
+### Requirements
+- **JDK:** OpenJDK 17 or 21
+- **Android SDK:** Platform 35 with Build Tools 35.0.0
+- **NDK & CMake:** NDK 26+ and CMake 3.22+ (for native C++ USB audio engine)
 
-### Build Instructions
+### Commands
 
 ```bash
-# Clone the repository
+# 1. Clone the repository
 git clone https://github.com/Eurt-labs/Fiend.git
 cd Fiend
 
-# Build the release APK
-./gradlew assembleRelease
+# 2. Build production release APK
+./gradlew assembleRelease -PtargetAbis=arm64-v8a
 
-# The generated APK will be at:
-# app/build/outputs/apk/release/app-release-unsigned.apk
+# Output APK path:
+# app/build/outputs/apk/release/app-release.apk
 ```
 
-> [!TIP]
-> For local development and debugging, run `./gradlew assembleDebug` or install directly to a connected device via `./gradlew installDebug`.
+---
+
+## ✦ Community & Support
+
+Have questions, suggestions, or want to follow upcoming updates? Connect with us:
+
+- 💬 **Telegram Support Group:** [@fiend_music](https://t.me/fiend_music)
+- 📢 **Eurt Labs & ACRO Channel:** [@eurtXacro](https://t.me/eurtXacro)
+- 🗃️ **Ecosystem Products:** [Stash](https://github.com/Eurt-labs/Stash)
 
 ---
 
-## Support the Project
+## ✦ Acknowledgements
 
-If Fiend has been useful to you, consider supporting its development.
+Fiend is made possible through open-source innovation and community contributions:
+- **InnerTune & Metrolist** — InnerTube streaming architectures
+- **Decent USB Audio Driver** — Hardware-direct USB DAC driver
+- **AutoEQ** — Headphone & IEM acoustic compensation presets
+- **LRCLIB** — Synchronized lyrics service
+- **Kyant** — Real-time backdrop refraction shaders
 
-<div align="left">
-  <table style="margin: 0 auto; border-collapse: collapse; border: none;">
-    <tr>
-      <td align="center" style="padding: 15px; border: none;">
-        <a href="https://buymeacoffee.com/ajisth" target="_blank" style="text-decoration:none;"><img src="docs/badges/bmac.png" alt="Buy Me A Coffee" width="140" style="border-radius: 12px; box-shadow: 0 8px 16px rgba(0,0,0,0.2);"/></a>
-      </td>
-      <td align="center" style="padding: 15px; border: none;">
-        <a href="https://buymeachai.ezee.li/ajisth69" target="_blank" style="text-decoration:none;"><img src="docs/badges/upi.png" alt="UPI (Buy Me A Chai)" width="140" style="border-radius: 12px; box-shadow: 0 8px 16px rgba(0,0,0,0.2);"/></a>
-      </td>
-      <td align="center" style="padding: 15px; border: none;">
-        <a href="https://github.com/sponsors/ajisth69" target="_blank" style="text-decoration:none;"><img src="docs/badges/github_sponsors.svg" alt="GitHub Sponsors" width="140" style="border-radius: 12px; box-shadow: 0 8px 16px rgba(0,0,0,0.2);"/></a>
-      </td>
-    </tr>
-  </table>
+---
+
+## ✦ Disclaimer
+
+Fiend is an independent open-source client developed by **Eurt Labs** and **ACRO** for educational, experimental, and personal use. Fiend does not host or distribute copyrighted media files; all streams are resolved directly from public services. All product names, trademarks, and registered trademarks belong to their respective owners.
+
+<div align="center">
+  <br/>
+  <b>Crafted with passion by Eurt Labs & ACRO</b>
 </div>
-
-
-
----
-
-
-## Acknowledgements
-
-Fiend is made possible thanks to these open-source projects:
-
-- **[Metrolist](https://github.com/MetrolistGroup/Metrolist)** — InnerTubeX & stream resolving
-- **[SimpMusic](https://github.com/maxrave-dev/SimpMusic)** — Canvas extraction & Liquid Glass inspiration
-- **[InnerTune](https://github.com/z-huang/InnerTune)** — InnerTube extraction architecture
-- **[Decent USB Audio Driver](https://github.com/silva96/decent-usb-audio-driver)** — Bit-perfect direct USB DAC audio engine
-- **[AutoEQ](https://github.com/jaakkopasanen/AutoEq)** — Headphone & IEM frequency-response calibration targets
-- **[NewPipe](https://github.com/TeamNewPipe/NewPipeExtractor)** — Stream extraction & media URL resolving
-- **[SponsorBlock](https://sponsor.ajay.app/)** — Video segment detection for music video intro skit synchronization
-- **[LRCLIB](https://lrclib.net/)** — Real-time millisecond-synchronized lyrics database
-- **[Kyant](https://github.com/kyant0)** — Jetpack Compose backdrop refraction & shape shaders
-
----
-
-## Contributors
-
-Fiend wouldn't be possible without our incredible community of contributors. Thank you for making it better every day!
-
-<p align="center">
-  <a href="https://github.com/Eurt-labs/Fiend/graphs/contributors">
-    <img src="https://contrib.rocks/image?repo=Eurt-labs/Fiend" alt="Contributors" />
-  </a>
-</p>
-
----
-
-
-## Disclaimer
-
-Fiend is an open-source, non-commercial application developed strictly for educational and research purposes.
-
-- **No Affiliation:** This project is not affiliated with, funded, authorized, endorsed by, or in any way associated with Google LLC, YouTube, YouTube Music, Spotify, Apple Inc., Last.fm, or any of their subsidiaries.
-- **Content Delivery:** Fiend does not host, store on private servers, or distribute copyrighted media. All playback streams and metadata are resolved directly from public endpoints.
-- **Trademarks:** All product names, logos, trademarks, and registered trademarks belong to their respective owners.
-
-<!-- [![GitGem](https://gitgem.org/api/badge/github/Eurt-labs/Fiend.svg)](https://gitgem.org/github/Eurt-labs/Fiend) -->
-<a href="https://gitgem.org/github/Eurt-labs/Fiend"><img src="https://gitgem.org/api/badge/github/Eurt-labs/Fiend.svg" width="0" height="0" alt="" /></a>
