@@ -1388,25 +1388,9 @@ object SettingsSearchIndex {
             )
             add(
                 SettingsEntry(
-                    id = "about.discord_support",
-                    title = "Discord Support",
-                    subtitle = "Join our Discord community server for support and feedback",
-                    keywords = listOf(
-                        "discord", "community", "chat", "support", "feedback", "server", "discussion"
-                    ),
-                    icon = Icons.Filled.Group,
-                    iconContainer = { MaterialTheme.colorScheme.tertiaryContainer },
-                    iconTint = { MaterialTheme.colorScheme.onTertiaryContainer },
-                    parentTab = SettingsTab.ABOUT,
-                    section = "About & Community",
-                    type = EntryType.ACTION,
-                )
-            )
-            add(
-                SettingsEntry(
                     id = "about.more_apps",
-                    title = "More Apps from Clash Projects",
-                    subtitle = "Join @eurtXacro on Telegram to discover other applications",
+                    title = "More From Us",
+                    subtitle = "Join @eurtXacro on Telegram to discover other applications by Eurt Labs and ACRO",
                     keywords = listOf(
                         "more apps", "material you app", "other apps", "clash projects", "developer"
                     ),

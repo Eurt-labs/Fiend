@@ -133,8 +133,8 @@ class ThemePreferences @Inject constructor(
         dataStore.edit {
             it[Keys.FIEND_THEME] = enabled
             if (enabled) {
-                it[Keys.ACCENT_COLOR] = "#C9FB00"
-                it[Keys.ACCENT_LIGHT] = "#C9FB00"
+                it[Keys.ACCENT_COLOR] = "#00D2FF"
+                it[Keys.ACCENT_LIGHT] = "#0284C7"
                 it[Keys.ACCENT_MODE] = AccentMode.MANUAL.storageValue
             }
         }

@@ -103,34 +103,35 @@ object Md3SchemeBuilder {
     )
 
     /**
-     * Fiend Signature Dark Scheme built specifically around the official app logo colors:
-     * Electric Lime (#C9FB00) and Deep Obsidian Teal (#012226).
+     * Fiend Signature Dark Scheme built specifically around the authentic Fiend logo:
+     * OLED Obsidian Black, Darkish Navy Blue (#0A0F1D / #0E1626), Electric Cyan (#00D2FF / #38BDF8),
+     * and Neon Indigo / Violet (#818CF8 / #C084FC).
      */
     fun buildFiendDarkScheme(amoled: Boolean, @Suppress("UNUSED_PARAMETER") liquidGlass: Boolean = false): ColorScheme {
-        val brandLime = Color(0xFFC9FB00)
-        val darkTeal = Color(0xFF012226)
-        val deepTeal = Color(0xFF01181B)
+        val electricCyan = Color(0xFF38BDF8)
+        val deepNavy = Color(0xFF0A0F1D)
+        val midnightSurface = Color(0xFF0E1626)
 
-        val backgroundCol = if (amoled) Color.Black else deepTeal
-        val surfaceCol = if (amoled) Color.Black else darkTeal
-        val surfaceLowCol = if (amoled) Color.Black else Color(0xFF011E22)
-        val surfaceLowestCol = if (amoled) Color.Black else Color(0xFF001214)
+        val backgroundCol = if (amoled) Color.Black else deepNavy
+        val surfaceCol = if (amoled) Color.Black else midnightSurface
+        val surfaceLowCol = if (amoled) Color.Black else Color(0xFF0B1220)
+        val surfaceLowestCol = if (amoled) Color.Black else Color(0xFF070B14)
 
         return darkColorScheme(
-            primary = brandLime,
-            onPrimary = darkTeal,
-            primaryContainer = Color(0xFF063E45),
-            onPrimaryContainer = Color(0xFFD6FF38),
+            primary = electricCyan,
+            onPrimary = Color(0xFF001B2E),
+            primaryContainer = Color(0xFF0F3656),
+            onPrimaryContainer = Color(0xFFBAE6FD),
 
-            secondary = Color(0xFF38E5B7),
-            onSecondary = darkTeal,
-            secondaryContainer = Color(0xFF06474F),
-            onSecondaryContainer = Color(0xFF67F8D8),
+            secondary = Color(0xFF818CF8),
+            onSecondary = Color(0xFF1E1B4B),
+            secondaryContainer = Color(0xFF2E2D68),
+            onSecondaryContainer = Color(0xFFE0E7FF),
 
-            tertiary = Color(0xFFA6FF38),
-            onTertiary = Color(0xFF1B3800),
-            tertiaryContainer = Color(0xFF0C464C),
-            onTertiaryContainer = brandLime,
+            tertiary = Color(0xFFC084FC),
+            onTertiary = Color(0xFF3B0764),
+            tertiaryContainer = Color(0xFF4C1D95),
+            onTertiaryContainer = Color(0xFFF3E8FF),
 
             error = Color(0xFFFFB4AB),
             errorContainer = Color(0xFF93000A),
@@ -138,23 +139,23 @@ object Md3SchemeBuilder {
             onError = Color(0xFF690005),
 
             background = backgroundCol,
-            onBackground = Color(0xFFE4F8F8),
+            onBackground = Color(0xFFF1F5F9),
             surface = surfaceCol,
-            onSurface = Color(0xFFE4F8F8),
-            surfaceContainer = Color(0xFF02272C),
-            surfaceContainerHigh = Color(0xFF04333A),
-            surfaceContainerHighest = Color(0xFF073F47),
+            onSurface = Color(0xFFF1F5F9),
+            surfaceContainer = Color(0xFF131D33),
+            surfaceContainerHigh = Color(0xFF18243E),
+            surfaceContainerHighest = Color(0xFF1E2D4C),
             surfaceContainerLow = surfaceLowCol,
             surfaceContainerLowest = surfaceLowestCol,
-            surfaceVariant = Color(0xFF063B42),
-            onSurfaceVariant = Color(0xFFA1CACE),
+            surfaceVariant = Color(0xFF19253B),
+            onSurfaceVariant = Color(0xFF94A3B8),
 
-            outline = Color(0xFF23656E),
-            outlineVariant = Color(0xFF0A444C),
+            outline = Color(0xFF283B5E),
+            outlineVariant = Color(0xFF16233B),
 
-            inverseSurface = Color(0xFFE4F8F8),
-            inverseOnSurface = darkTeal,
-            inversePrimary = Color(0xFF486300),
+            inverseSurface = Color(0xFFF1F5F9),
+            inverseOnSurface = Color(0xFF0F172A),
+            inversePrimary = Color(0xFF0284C7),
             scrim = Color.Black,
         )
     }
@@ -163,48 +164,45 @@ object Md3SchemeBuilder {
      * Fiend Signature Light Scheme built around the official app logo colors.
      */
     fun buildFiendLightScheme(@Suppress("UNUSED_PARAMETER") liquidGlass: Boolean = false): ColorScheme {
-        val brandLime = Color(0xFFC9FB00)
-        val darkTeal = Color(0xFF012226)
-
         return androidx.compose.material3.lightColorScheme(
-            primary = Color(0xFF486300),
+            primary = Color(0xFF0284C7),
             onPrimary = Color.White,
-            primaryContainer = Color(0xFFE0FE5B),
-            onPrimaryContainer = darkTeal,
+            primaryContainer = Color(0xFFE0F2FE),
+            onPrimaryContainer = Color(0xFF034A75),
 
-            secondary = Color(0xFF014D56),
+            secondary = Color(0xFF4F46E5),
             onSecondary = Color.White,
-            secondaryContainer = Color(0xFF9FF2E2),
-            onSecondaryContainer = darkTeal,
+            secondaryContainer = Color(0xFFEEF2FF),
+            onSecondaryContainer = Color(0xFF1E1B4B),
 
-            tertiary = Color(0xFF2C6855),
+            tertiary = Color(0xFF7C3AED),
             onTertiary = Color.White,
-            tertiaryContainer = Color(0xFFB8F9A5),
-            onTertiaryContainer = Color(0xFF0E3800),
+            tertiaryContainer = Color(0xFFF5F3FF),
+            onTertiaryContainer = Color(0xFF3B0764),
 
             error = Color(0xFFBA1A1A),
             errorContainer = Color(0xFFFFDAD6),
             onErrorContainer = Color(0xFF410002),
             onError = Color.White,
 
-            background = Color(0xFFF2FBF7),
-            onBackground = darkTeal,
-            surface = Color(0xFFF2FBF7),
-            onSurface = darkTeal,
-            surfaceContainer = Color(0xFFE0F1EC),
-            surfaceContainerHigh = Color(0xFFD6EAE5),
-            surfaceContainerHighest = Color(0xFFCCE4DE),
-            surfaceContainerLow = Color(0xFFEAF6F2),
+            background = Color(0xFFF8FAFC),
+            onBackground = Color(0xFF0F172A),
+            surface = Color(0xFFF8FAFC),
+            onSurface = Color(0xFF0F172A),
+            surfaceContainer = Color(0xFFF1F5F9),
+            surfaceContainerHigh = Color(0xFFE2E8F0),
+            surfaceContainerHighest = Color(0xFFCBD5E1),
+            surfaceContainerLow = Color(0xFFF8FAFC),
             surfaceContainerLowest = Color.White,
-            surfaceVariant = Color(0xFFD6ECE8),
-            onSurfaceVariant = Color(0xFF1E464B),
+            surfaceVariant = Color(0xFFE2E8F0),
+            onSurfaceVariant = Color(0xFF475569),
 
-            outline = Color(0xFF5A8E89),
-            outlineVariant = Color(0xFFB0D5D0),
+            outline = Color(0xFF94A3B8),
+            outlineVariant = Color(0xFFCBD5E1),
 
-            inverseSurface = darkTeal,
-            inverseOnSurface = Color(0xFFE4F8F8),
-            inversePrimary = brandLime,
+            inverseSurface = Color(0xFF0F172A),
+            inverseOnSurface = Color(0xFFF8FAFC),
+            inversePrimary = Color(0xFF38BDF8),
             scrim = Color.Black,
         )
     }

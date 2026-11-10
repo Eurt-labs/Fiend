@@ -25,7 +25,7 @@ data class WaveWidgetColors(
                 }.getOrNull()
                 if (accent != null && background != null) return derive(accent, dark, background)
             }
-            return derive(if (dark) 0xFFC9FB00.toInt() else 0xFF00666D.toInt(), dark)
+            return derive(if (dark) 0xFF00D2FF.toInt() else 0xFF0284C7.toInt(), dark)
         }
 
         fun derive(swatch: Int, dark: Boolean, preferredBackground: Int? = null): WaveWidgetColors {

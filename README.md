@@ -9,9 +9,8 @@
 <br/>
 
 <p align="center">
-  <a href="https://t.me/Eurt-labs" target="_blank"><img src="docs/badges/btn_telegram_support.svg" alt="Telegram Support" height="42" /></a>
+  <a href="https://t.me/fiend_music" target="_blank"><img src="docs/badges/btn_telegram_support.svg" alt="Telegram Support" height="42" /></a>
   <a href="https://t.me/eurtXacro" target="_blank"><img src="docs/badges/btn_telegram_channel.svg" alt="Telegram Channel" height="42" /></a>
-  <a href="https://discord.gg/DmyM2p2fMe" target="_blank"><img src="docs/badges/btn_discord.svg" alt="Discord Community" height="42" /></a>
 </p>
 
 <p align="center">
@@ -122,9 +121,9 @@ For audio lovers, Fiend packs Bit-Perfect USB DAC output, Lossless FLAC addon su
 
 | Channel | Source | Compatibility |
 |:---|:---|:---|
-| **Stable Release** | [GitHub Releases](https://github.com/Eurt-labs/Fiend-native/releases) | Recommended for all users • Android 7.0+ (API 24+) |
-| **Nightly Builds** | [GitHub Actions](https://github.com/Eurt-labs/Fiend-native/actions) | Latest automated builds with bleeding-edge features |
-| **Desktop App** | [Fiend-Desktop](https://github.com/Eurt-labs/Fiend-Desktop) | Official desktop client for Windows, macOS & Linux |
+| **Stable Release** | [GitHub Releases](https://github.com/Eurt-labs/Fiend/releases) | Recommended for all users • Android 7.0+ (API 24+) |
+| **Nightly Builds** | [GitHub Actions](https://github.com/Eurt-labs/Fiend/actions) | Latest automated builds with bleeding-edge features |
+| **Desktop App** | [Fiend-Desktop](https://github.com/acro777x/Fiend-Desktop) | Official desktop client for Windows, macOS & Linux |
 
 ### Quick Setup
 
@@ -147,8 +146,8 @@ For audio lovers, Fiend packs Bit-Perfect USB DAC output, Lossless FLAC addon su
 
 ```bash
 # Clone the repository
-git clone https://github.com/Eurt-labs/Fiend-native.git
-cd Fiend-native
+git clone https://github.com/Eurt-labs/Fiend.git
+cd Fiend
 
 # Build the release APK
 ./gradlew assembleRelease
@@ -208,8 +207,8 @@ Fiend is made possible thanks to these open-source projects:
 Fiend wouldn't be possible without our incredible community of contributors. Thank you for making it better every day!
 
 <p align="center">
-  <a href="https://github.com/Eurt-labs/Fiend-Native/graphs/contributors">
-    <img src="https://contrib.rocks/image?repo=Eurt-labs/Fiend-Native" alt="Contributors" />
+  <a href="https://github.com/Eurt-labs/Fiend/graphs/contributors">
+    <img src="https://contrib.rocks/image?repo=Eurt-labs/Fiend" alt="Contributors" />
   </a>
 </p>
 
@@ -224,5 +223,5 @@ Fiend is an open-source, non-commercial application developed strictly for educa
 - **Content Delivery:** Fiend does not host, store on private servers, or distribute copyrighted media. All playback streams and metadata are resolved directly from public endpoints.
 - **Trademarks:** All product names, logos, trademarks, and registered trademarks belong to their respective owners.
 
-<!-- [![GitGem](https://gitgem.org/api/badge/github/Eurt-labs/Fiend-Native.svg)](https://gitgem.org/github/Eurt-labs/Fiend-Native) -->
-<a href="https://gitgem.org/github/Eurt-labs/Fiend-Native"><img src="https://gitgem.org/api/badge/github/Eurt-labs/Fiend-Native.svg" width="0" height="0" alt="" /></a>
+<!-- [![GitGem](https://gitgem.org/api/badge/github/Eurt-labs/Fiend.svg)](https://gitgem.org/github/Eurt-labs/Fiend) -->
+<a href="https://gitgem.org/github/Eurt-labs/Fiend"><img src="https://gitgem.org/api/badge/github/Eurt-labs/Fiend.svg" width="0" height="0" alt="" /></a>

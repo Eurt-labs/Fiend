@@ -120,8 +120,8 @@ fun FiendJamSheet(
     val context = LocalContext.current
 
     val isDark = com.fiend.music.ui.theme.LocalIsDarkTheme.current
-    val LimeAccent = if (isDark) Color(0xFFC9FB00) else Color(0xFF2E6B12)
-    val DarkTeal = if (isDark) Color(0xFF012226) else Color.White
+    val LimeAccent = if (isDark) Color(0xFF00D2FF) else Color(0xFF0284C7)
+    val DarkTeal = if (isDark) Color(0xFF0A0F1D) else Color.White
 
     var selectedTabIndex by remember { mutableIntStateOf(0) }
     var chatInputText by remember { mutableStateOf("") }

@@ -2268,7 +2268,7 @@ fun SettingsScreen(
                         item {
                 Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
                     SectionLabel(stringResource(R.string.settings_section_about))
-                    SettingsGroup(rowCount = 4) { index, position ->
+                    SettingsGroup(rowCount = 3) { index, position ->
                         when (index) {
                             0 -> SettingsActionCard(
                                 icon = Icons.AutoMirrored.Filled.Send,
@@ -2285,21 +2285,6 @@ fun SettingsScreen(
                                 isHighlighted = (highlightedSettingId == "about.telegram_support"),
                             )
                             1 -> SettingsActionCard(
-                                icon = Icons.Filled.Group,
-                                iconContainer = MaterialTheme.colorScheme.tertiaryContainer,
-                                iconTint = MaterialTheme.colorScheme.onTertiaryContainer,
-                                title = stringResource(R.string.set_discord_support),
-                                subtitle = stringResource(R.string.set_discord_support_sub),
-                                onClick = {
-                                    val discordIntent = Intent(Intent.ACTION_VIEW, Uri.parse("https://discord.gg/TMCEPSUNk2"))
-                                    if (!startActivitySafely(context, discordIntent)) {
-                                        viewModel.showToast(context.getString(R.string.toast_no_browser))
-                                    }
-                                },
-                                position = position,
-                                isHighlighted = (highlightedSettingId == "about.discord_support"),
-                            )
-                            2 -> SettingsActionCard(
                                 icon = Icons.Filled.AutoAwesome,
                                 iconContainer = MaterialTheme.colorScheme.primaryContainer,
                                 iconTint = MaterialTheme.colorScheme.onPrimaryContainer,
@@ -2313,7 +2298,7 @@ fun SettingsScreen(
                                 position = position,
                                 isHighlighted = (highlightedSettingId == "about.more_apps"),
                             )
-                            3 -> SettingsActionCard(
+                            2 -> SettingsActionCard(
                                 icon = Icons.Filled.Code,
                                 iconContainer = MaterialTheme.colorScheme.secondaryContainer,
                                 iconTint = MaterialTheme.colorScheme.onSecondaryContainer,

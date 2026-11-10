@@ -85,9 +85,9 @@ class JamRepository @Inject constructor(
 ) {
     companion object {
         private const val TAG = "FiendJam"
-        // Default production sync daemon address
-        const val DEFAULT_JAM_SERVER_WS = "wss://jam.fiend.music/ws"
-        const val DEFAULT_JAM_SERVER_HTTP = "https://jam.fiend.music"
+        // Operational production sync daemon address
+        const val DEFAULT_JAM_SERVER_WS = "wss://jam.clashprojects.qd.je/ws"
+        const val DEFAULT_JAM_SERVER_HTTP = "https://jam.clashprojects.qd.je"
     }
 
     private val json = Json {

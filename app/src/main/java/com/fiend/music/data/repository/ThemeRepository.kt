@@ -264,7 +264,7 @@ class ThemeRepository @Inject constructor(
             colorScheme = darkScheme,
             amoled = isAmoled,
             mode = prefs.accentMode,
-            accentColorHex = if (isFiend) "#C9FB00" else prefs.accentColor,
+            accentColorHex = if (isFiend) "#00D2FF" else prefs.accentColor,
             useCustomFont = misc.useCustomFont,
             liquidGlass = isGlass,
             md3NavBar = prefs.md3NavBar,

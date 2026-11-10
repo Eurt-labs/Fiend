@@ -6,6 +6,6 @@
     <!-- Fiend app icon backgrounds -->
     <color name="ic_launcher_background">#FF000000</color>
     <color name="ic_launcher_background_desktop">#FF090D14</color>
-    <color name="ic_launcher_background_white">#FFFFFFFF</color>
-    <color name="ic_launcher_background_black">#FF000000</color>
+    <color name="ic_launcher_background_white">#FF0F172A</color>
+    <color name="ic_launcher_background_black">#FF050811</color>
 </resources>
