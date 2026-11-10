@@ -739,7 +739,7 @@ class MusicPlaybackService : MediaBrowserServiceCompat() {
                 Notification.Builder(this, CHANNEL_ID)
             } else {
                 @Suppress("DEPRECATION") Notification.Builder(this)
-            }.setSmallIcon(R.drawable.ic_launcher_logo)
+            }.setSmallIcon(R.drawable.fiend_logo)
              .setContentTitle(musicPlayer.state.value.current?.title ?: "Fiend")
              .setContentText(musicPlayer.state.value.current?.artist ?: "Music player")
              .setOnlyAlertOnce(true)
@@ -1619,7 +1619,7 @@ class MusicPlaybackService : MediaBrowserServiceCompat() {
             // so the play action always reads the actual current state.
             val playPauseLabel = if (state.isPlaying) "Pause" else "Play"
             return builder
-                .setSmallIcon(R.drawable.ic_launcher_logo)
+                .setSmallIcon(R.drawable.fiend_logo)
                 .setContentTitle(state.current?.title ?: "Fiend")
                 .setContentText(state.current?.artist ?: "Music player")
                 .setSubText(state.current?.album)
@@ -1685,7 +1685,7 @@ class MusicPlaybackService : MediaBrowserServiceCompat() {
         }
 
         return builder
-            .setSmallIcon(R.drawable.ic_launcher_logo)
+            .setSmallIcon(R.drawable.fiend_logo)
             .setContentTitle(state.current?.title ?: "Fiend")
             .setContentText(state.current?.artist ?: "Music player")
             .setSubText(state.current?.album)

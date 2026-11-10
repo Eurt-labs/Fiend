@@ -771,7 +771,7 @@ private fun LaunchGate() {
                 modifier = Modifier.size(88.dp),
             ) {
                 androidx.compose.foundation.Image(
-                    painter = painterResource(com.fiend.music.R.drawable.ic_launcher_foreground),
+                    painter = painterResource(com.fiend.music.R.drawable.fiend_logo),
                     contentDescription = null,
                     modifier = Modifier.fillMaxSize(),
                 )
