@@ -5216,7 +5216,7 @@ private fun MoreFromUsCard(
                 )
             }
             Icon(
-                imageVector = Icons.AutoMirrored.Filled.OpenInNew,
+                imageVector = Icons.AutoMirrored.Filled.ArrowForward,
                 contentDescription = null,
                 tint = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.size(20.dp),
@@ -5225,6 +5225,7 @@ private fun MoreFromUsCard(
     }
 }
 
+@Composable
 private fun AboutCard(
     versionName: String,
     appIcon: AppIcon = AppIcon.DEFAULT,
