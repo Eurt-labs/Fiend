@@ -931,7 +931,7 @@ private fun JoinSupportDialog(
 
                 Spacer(Modifier.height(2.dp))
 
-                // Telegram Channel: MaterialYouApp
+                // Telegram Channel: Eurt & ACRO
                 Surface(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -972,7 +972,7 @@ private fun JoinSupportDialog(
                                 color = MaterialTheme.colorScheme.onSurface,
                             )
                             Text(
-                                text = "t.me/MaterialYouApp",
+                                text = "t.me/eurtXacro",
                                 style = MaterialTheme.typography.bodySmall,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                             )
@@ -986,7 +986,7 @@ private fun JoinSupportDialog(
                     }
                 }
 
-                // Telegram Support: ClashProjects
+                // Telegram Support: Fiend Music
                 Surface(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -1021,13 +1021,13 @@ private fun JoinSupportDialog(
                         }
                         Column(modifier = Modifier.weight(1f)) {
                             Text(
-                                text = "ClashProjects Support",
+                                text = "Fiend Music Support",
                                 style = MaterialTheme.typography.labelLarge,
                                 fontWeight = FontWeight.SemiBold,
                                 color = MaterialTheme.colorScheme.onSurface,
                             )
                             Text(
-                                text = "@clashprojects on Telegram",
+                                text = "@fiend_music on Telegram",
                                 style = MaterialTheme.typography.bodySmall,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                             )
@@ -1113,14 +1113,14 @@ private fun JoinSupportDialog(
 }
 
 private fun openMaterialYouChannel(context: android.content.Context) {
-    val tgIntent = android.content.Intent(android.content.Intent.ACTION_VIEW, android.net.Uri.parse("tg://resolve?domain=MaterialYouApp")).apply {
+    val tgIntent = android.content.Intent(android.content.Intent.ACTION_VIEW, android.net.Uri.parse("tg://resolve?domain=eurtXacro")).apply {
         setPackage("org.telegram.messenger")
         addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK)
     }
-    val genericTgIntent = android.content.Intent(android.content.Intent.ACTION_VIEW, android.net.Uri.parse("tg://resolve?domain=MaterialYouApp")).apply {
+    val genericTgIntent = android.content.Intent(android.content.Intent.ACTION_VIEW, android.net.Uri.parse("tg://resolve?domain=eurtXacro")).apply {
         addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK)
     }
-    val webIntent = android.content.Intent(android.content.Intent.ACTION_VIEW, android.net.Uri.parse("https://t.me/MaterialYouApp")).apply {
+    val webIntent = android.content.Intent(android.content.Intent.ACTION_VIEW, android.net.Uri.parse("https://t.me/eurtXacro")).apply {
         addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK)
     }
     val success = runCatching { context.startActivity(tgIntent); true }.getOrDefault(false) ||
@@ -1132,14 +1132,14 @@ private fun openMaterialYouChannel(context: android.content.Context) {
 }
 
 private fun openTelegramSupport(context: android.content.Context) {
-    val tgIntent = android.content.Intent(android.content.Intent.ACTION_VIEW, android.net.Uri.parse("tg://resolve?domain=clashprojects")).apply {
+    val tgIntent = android.content.Intent(android.content.Intent.ACTION_VIEW, android.net.Uri.parse("tg://resolve?domain=fiend_music")).apply {
         setPackage("org.telegram.messenger")
         addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK)
     }
-    val genericTgIntent = android.content.Intent(android.content.Intent.ACTION_VIEW, android.net.Uri.parse("tg://resolve?domain=clashprojects")).apply {
+    val genericTgIntent = android.content.Intent(android.content.Intent.ACTION_VIEW, android.net.Uri.parse("tg://resolve?domain=fiend_music")).apply {
         addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK)
     }
-    val webIntent = android.content.Intent(android.content.Intent.ACTION_VIEW, android.net.Uri.parse("https://t.me/clashprojects")).apply {
+    val webIntent = android.content.Intent(android.content.Intent.ACTION_VIEW, android.net.Uri.parse("https://t.me/fiend_music")).apply {
         addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK)
     }
     val success = runCatching { context.startActivity(tgIntent); true }.getOrDefault(false) ||

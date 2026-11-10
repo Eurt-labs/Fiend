@@ -816,10 +816,10 @@
     <string name="set_discord_title">Discord-reiche Präsenz</string>
     <string name="set_discord_on">Auf • werden Ihr Titel, Ihre Qualität und Ihr Cover in Ihrem Discord-Profil angezeigt</string>
     <string name="set_discord_off">Aus • Fiend bleibt aus Ihrem Discord-Profil entfernt</string>
-    <string name="set_tg_sub">Treten Sie @clashprojects per Telegram bei</string>
+    <string name="set_tg_sub">Treten Sie @fiend_music per Telegram bei</string>
     <string name="set_discord_support">Discord-Unterstützung</string>
     <string name="set_discord_support_sub">Treten Sie unserer Discord-Community bei</string>
-    <string name="set_more_apps_sub">Treten Sie @MaterialYouApp per Telegram bei</string>
+    <string name="set_more_apps_sub">Treten Sie @eurtXacro per Telegram bei</string>
     <string name="toast_no_browser_tg">Es ist kein kompatibler Browser oder keine Telegram-App verfügbar</string>
     <string name="toast_no_browser">Es ist kein kompatibler Browser verfügbar</string>
     <string name="toast_no_browser_plain">Es ist kein Browser verfügbar</string>

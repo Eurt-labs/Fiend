@@ -819,10 +819,10 @@
     <string name="set_discord_title">不和谐丰富的存在</string>
     <string name="set_discord_on">• 您的曲目、质量和封面显示在您的 Discord 个人资料上</string>
     <string name="set_discord_off">关闭 • Fiend 远离您的 Discord 个人资料</string>
-    <string name="set_tg_sub">在 Telegram 上加入 @clashprojects</string>
+    <string name="set_tg_sub">在 Telegram 上加入 @fiend_music</string>
     <string name="set_discord_support">不和谐支持</string>
     <string name="set_discord_support_sub">加入我们的 Discord 社区</string>
-    <string name="set_more_apps_sub">在 Telegram 上加入 @MaterialYouApp</string>
+    <string name="set_more_apps_sub">在 Telegram 上加入 @eurtXacro</string>
     <string name="toast_no_browser_tg">没有可用的兼容浏览器或 Telegram 应用程序</string>
     <string name="toast_no_browser">没有可用的兼容浏览器</string>
     <string name="toast_no_browser_plain">没有可用的浏览器</string>

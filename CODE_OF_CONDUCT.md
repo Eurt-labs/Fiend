@@ -60,7 +60,7 @@ representative at an online or offline event.
 
 Instances of abusive, harassing, or otherwise unacceptable behavior may be
 reported to the project maintainers via the Telegram channel at
-https://t.me/clashprojects or community group at https://t.me/clashdiscussion.
+https://t.me/Eurt-labs or community group at https://t.me/clashdiscussion.
 All reports will be reviewed and investigated promptly and fairly.
 
 All community leaders are obligated to respect the privacy and security of the

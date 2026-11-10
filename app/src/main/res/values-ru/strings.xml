@@ -816,10 +816,10 @@
     <string name="set_discord_title">Богатое присутствие Discord</string>
     <string name="set_discord_on">Включите • ваш трек, качество и обложку в вашем профиле Discord.</string>
     <string name="set_discord_off">Выкл. • Fiend остается вне вашего профиля Discord.</string>
-    <string name="set_tg_sub">Присоединяйтесь к @clashprojects в Telegram</string>
+    <string name="set_tg_sub">Присоединяйтесь к @fiend_music в Telegram</string>
     <string name="set_discord_support">Поддержка Дискорда</string>
     <string name="set_discord_support_sub">Присоединяйтесь к нашему сообществу Discord</string>
-    <string name="set_more_apps_sub">Присоединяйтесь к @MaterialYouApp в Telegram</string>
+    <string name="set_more_apps_sub">Присоединяйтесь к @eurtXacro в Telegram</string>
     <string name="toast_no_browser_tg">Совместимый браузер или приложение Telegram недоступны.</string>
     <string name="toast_no_browser">Совместимый браузер не доступен</string>
     <string name="toast_no_browser_plain">Браузер недоступен</string>

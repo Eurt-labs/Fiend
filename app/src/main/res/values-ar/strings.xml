@@ -816,10 +816,10 @@
     <string name="set_discord_title">وجود الخلاف الغني</string>
     <string name="set_discord_on">على • عرض المسار والجودة والغلاف الخاص بك على ملف تعريف Discord الخاص بك</string>
     <string name="set_discord_off">متوقف • يظل Fiend خارج ملفك الشخصي على Discord</string>
-    <string name="set_tg_sub">انضم إلى @clashprojects على Telegram</string>
+    <string name="set_tg_sub">انضم إلى @fiend_music على Telegram</string>
     <string name="set_discord_support">دعم الخلاف</string>
     <string name="set_discord_support_sub">انضم إلى مجتمع Discord الخاص بنا</string>
-    <string name="set_more_apps_sub">انضم إلى @MaterialYouApp على Telegram</string>
+    <string name="set_more_apps_sub">انضم إلى @eurtXacro على Telegram</string>
     <string name="toast_no_browser_tg">لا يتوفر متصفح متوافق أو تطبيق Telegram</string>
     <string name="toast_no_browser">لا يوجد متصفح متوافق متاح</string>
     <string name="toast_no_browser_plain">لا يوجد متصفح متاح</string>

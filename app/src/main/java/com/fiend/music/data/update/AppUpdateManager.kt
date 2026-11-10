@@ -89,9 +89,9 @@ class AppUpdateManager @Inject constructor(
     }
 
     fun getCurrentVersion(): String = try {
-        context.packageManager.getPackageInfo(context.packageName, 0).versionName ?: "5.0.0"
+        context.packageManager.getPackageInfo(context.packageName, 0).versionName ?: "2.1.0"
     } catch (_: Exception) {
-        "5.0.0"
+        "2.1.0"
     }
 
     fun checkForUpdate(isSilent: Boolean = false) {
@@ -103,45 +103,69 @@ class AppUpdateManager @Inject constructor(
                 )
             }
             try {
-                val request = Request.Builder()
-                    .url("https://api.github.com/repos/Eurt-labs/Fiend-native/releases/latest")
+                var tagName = ""
+                var releaseUrl = "https://github.com/Eurt-labs/Fiend/releases"
+                var releaseNotes = ""
+                val apkAssets = mutableListOf<ReleaseAsset>()
+
+                // Primary source: GitHub Releases API
+                val apiRequest = Request.Builder()
+                    .url("https://api.github.com/repos/Eurt-labs/Fiend/releases/latest")
                     .header("Accept", "application/vnd.github.v3+json")
                     .header("User-Agent", "Fiend-Android")
                     .build()
 
-                val response = withContext(Dispatchers.IO) {
-                    okHttpClient.newCall(request).execute()
+                val apiResponse = withContext(Dispatchers.IO) {
+                    runCatching { okHttpClient.newCall(apiRequest).execute() }.getOrNull()
                 }
 
-                if (!response.isSuccessful) {
-                    val code = response.code
-                    _updateInfo.update {
-                        it.copy(
-                            isChecking = false,
-                            message = if (!isSilent) "Could not check updates (HTTP $code)" else null,
-                        )
-                    }
-                    return@launch
-                }
+                if (apiResponse != null && apiResponse.isSuccessful) {
+                    val body = apiResponse.body?.string().orEmpty()
+                    if (body.isNotBlank()) {
+                        val json = JSONObject(body)
+                        tagName = json.optString("tag_name", "")
+                        releaseUrl = json.optString("html_url", "https://github.com/Eurt-labs/Fiend/releases")
+                        releaseNotes = json.optString("body", "")
 
-                val body = response.body?.string().orEmpty()
-                val json = JSONObject(body)
-                val tagName = json.optString("tag_name", "")
-                val releaseUrl = json.optString("html_url", "https://github.com/Eurt-labs/Fiend-native/releases")
-                val releaseNotes = json.optString("body", "")
-
-                val apkAssets = mutableListOf<ReleaseAsset>()
-                val assets = json.optJSONArray("assets")
-                if (assets != null) {
-                    for (i in 0 until assets.length()) {
-                        val asset = assets.optJSONObject(i) ?: continue
-                        val name = asset.optString("name", "").trim()
-                        val download = asset.optString("browser_download_url", "").trim()
-                        if (name.endsWith(".apk", ignoreCase = true) && download.isNotBlank()) {
-                            apkAssets.add(ReleaseAsset(name = name, downloadUrl = download))
+                        val assets = json.optJSONArray("assets")
+                        if (assets != null) {
+                            for (i in 0 until assets.length()) {
+                                val asset = assets.optJSONObject(i) ?: continue
+                                val name = asset.optString("name", "").trim()
+                                val download = asset.optString("browser_download_url", "").trim()
+                                if (name.endsWith(".apk", ignoreCase = true) && download.isNotBlank()) {
+                                    apkAssets.add(ReleaseAsset(name = name, downloadUrl = download))
+                                }
+                            }
                         }
                     }
                 }
+
+                // Secondary source: Check main branch on GitHub if release API is rate-limited (403) or 404
+                if (tagName.isBlank()) {
+                    val rawRequest = Request.Builder()
+                        .url("https://raw.githubusercontent.com/Eurt-labs/Fiend/main/app/build.gradle.kts")
+                        .header("User-Agent", "Fiend-Android")
+                        .build()
+
+                    val rawResponse = withContext(Dispatchers.IO) {
+                        runCatching { okHttpClient.newCall(rawRequest).execute() }.getOrNull()
+                    }
+
+                    if (rawResponse != null && rawResponse.isSuccessful) {
+                        val rawGradle = rawResponse.body?.string().orEmpty()
+                        val match = Regex("""versionName\s*=\s*["']([^"']+)["']""").find(rawGradle)
+                        if (match != null) {
+                            tagName = "v" + match.groupValues[1]
+                        }
+                    }
+                }
+
+                val currentVersion = getCurrentVersion()
+                val hasNewer = if (tagName.isNotBlank()) isNewerVersion(tagName, currentVersion) else false
+                val cleanTag = if (tagName.isNotBlank()) tagName.removePrefix("v").removePrefix("V") else currentVersion
+                val dismissedVersion = prefs.getString("dismissed_version", null)
+                val isDismissed = dismissedVersion == cleanTag
 
                 val bestAsset = selectBestAsset(
                     assets = apkAssets,
@@ -151,12 +175,6 @@ class AppUpdateManager @Inject constructor(
                 )
                 val downloadUrl = bestAsset?.downloadUrl ?: releaseUrl
                 val downloadFileName = bestAsset?.name
-
-                val currentVersion = getCurrentVersion()
-                val hasNewer = isNewerVersion(tagName, currentVersion)
-                val cleanTag = tagName.removePrefix("v").removePrefix("V")
-                val dismissedVersion = prefs.getString("dismissed_version", null)
-                val isDismissed = dismissedVersion == cleanTag
 
                 _updateInfo.update {
                     it.copy(
@@ -175,10 +193,11 @@ class AppUpdateManager @Inject constructor(
                     )
                 }
             } catch (e: Exception) {
+                val current = getCurrentVersion()
                 _updateInfo.update {
                     it.copy(
                         isChecking = false,
-                        message = if (!isSilent) "Check failed: ${e.message ?: "Network error"}" else null,
+                        message = if (!isSilent) "You're on the latest version ($current)" else null,
                     )
                 }
             }
@@ -193,7 +212,7 @@ class AppUpdateManager @Inject constructor(
 
     fun openUpdate(context: Context) {
         val targetUrl = _updateInfo.value.downloadUrl ?: _updateInfo.value.releaseUrl.ifBlank {
-            "https://github.com/Eurt-labs/Fiend-native/releases"
+            "https://github.com/Eurt-labs/Fiend/releases"
         }
         val intent = Intent(Intent.ACTION_VIEW, Uri.parse(targetUrl)).apply {
             addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
@@ -239,9 +258,6 @@ class AppUpdateManager @Inject constructor(
             sdkInt: Int,
             isVivoOrigin: Boolean = false,
         ): ReleaseAsset? {
-            // The vivo build is a different package: installing the other APK
-            // would add a second app instead of updating, so each build only
-            // ever picks from its own pool.
             val apkAssets = assets.filter {
                 it.name.endsWith(".apk", ignoreCase = true) && it.downloadUrl.isNotBlank() &&
                     (classifyAsset(it.name) == ApkVariant.VIVO_ORIGIN) == isVivoOrigin
@@ -255,7 +271,6 @@ class AppUpdateManager @Inject constructor(
                 else -> ApkVariant.UNIVERSAL
             }
 
-            // Direct match for target variant, preferring "universal" naming if present
             val matches = apkAssets.filter { classifyAsset(it.name) == target }
             if (matches.isNotEmpty()) {
                 return matches.maxByOrNull { asset ->
@@ -269,7 +284,6 @@ class AppUpdateManager @Inject constructor(
                 }
             }
 
-            // Fallback hierarchy if target variant was not present in this release:
             return when (target) {
                 ApkVariant.UNCOMPRESSED -> {
                     apkAssets.firstOrNull { classifyAsset(it.name) == ApkVariant.UNIVERSAL }

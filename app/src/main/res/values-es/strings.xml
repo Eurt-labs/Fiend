@@ -816,10 +816,10 @@
     <string name="set_discord_title">Presencia rica en discordia</string>
     <string name="set_discord_on">En • tu pista, la calidad y la portada se muestran en tu perfil de Discord</string>
     <string name="set_discord_off">Desactivado • Fiend permanece fuera de tu perfil de Discord</string>
-    <string name="set_tg_sub">Únase a @clashprojects en Telegram</string>
+    <string name="set_tg_sub">Únase a @fiend_music en Telegram</string>
     <string name="set_discord_support">Soporte de discordia</string>
     <string name="set_discord_support_sub">Únete a nuestra comunidad de Discord</string>
-    <string name="set_more_apps_sub">Únase a @MaterialYouApp en Telegram</string>
+    <string name="set_more_apps_sub">Únase a @eurtXacro en Telegram</string>
     <string name="toast_no_browser_tg">No hay ningún navegador compatible ni aplicación de Telegram disponible</string>
     <string name="toast_no_browser">No hay ningún navegador compatible disponible</string>
     <string name="toast_no_browser_plain">No hay ningún navegador disponible</string>

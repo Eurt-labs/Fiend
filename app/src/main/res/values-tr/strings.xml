@@ -850,10 +850,10 @@
     <string name="set_discord_title">Discord Zengin Durum</string>
     <string name="set_discord_on">Açık • parçanız, kalite ve kapak Discord profilinizde görünür</string>
     <string name="set_discord_off">Kapalı • Fiend Discord profilinizde görünmez</string>
-    <string name="set_tg_sub">Telegram’da @clashprojects’e katılın</string>
+    <string name="set_tg_sub">Telegram’da @fiend_music’e katılın</string>
     <string name="set_discord_support">Discord Desteği</string>
     <string name="set_discord_support_sub">Discord topluluğumuza katılın</string>
-    <string name="set_more_apps_sub">Telegram’da @MaterialYouApp’e katılın</string>
+    <string name="set_more_apps_sub">Telegram’da @eurtXacro’e katılın</string>
     <string name="toast_no_browser_tg">Uyumlu tarayıcı veya Telegram uygulaması yok</string>
     <string name="toast_no_browser">Uyumlu tarayıcı yok</string>
     <string name="toast_no_browser_plain">Tarayıcı yok</string>

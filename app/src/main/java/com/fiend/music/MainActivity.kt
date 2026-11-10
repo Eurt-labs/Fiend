@@ -10,6 +10,8 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.ui.unit.dp
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -333,7 +335,7 @@ open class MainShellActivity : androidx.fragment.app.FragmentActivity() {
         }
         val uri = intent.data
         val isJamDeepLink = (uri?.scheme == "fiend" && (uri.host == "jam" || uri.host == "sync")) ||
-            ((uri?.scheme == "https" || uri?.scheme == "http") && uri?.host == "jam.clashprojects.qd.je")
+            ((uri?.scheme == "https" || uri?.scheme == "http") && uri?.host == "jam.fiend.music")
         if (isJamDeepLink) {
             val code = uri?.getQueryParameter("code")
             runCatching { appRouteNavigator.get().navigateTo(Screen.Jam.createRoute(code)) }

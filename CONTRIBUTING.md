@@ -22,7 +22,7 @@ cd Fiend-native
 
 ### Community & Questions
 For real-time development discussion and support:
-* Telegram Channel: https://t.me/clashprojects
+* Telegram Channel: https://t.me/Eurt-labs
 * Discussion Group: https://t.me/clashdiscussion
 
 ### Local Configuration

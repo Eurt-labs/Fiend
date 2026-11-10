@@ -816,10 +816,10 @@
     <string name="set_discord_title">Discord のリッチなプレゼンス</string>
     <string name="set_discord_on">オン • トラック、品質、カバーが Discord プロフィールに表示されます</string>
     <string name="set_discord_off">オフ • Fiend は Discord プロフィールから除外されます</string>
-    <string name="set_tg_sub">Telegram で @clashprojects に参加してください</string>
+    <string name="set_tg_sub">Telegram で @fiend_music に参加してください</string>
     <string name="set_discord_support">Discordのサポート</string>
     <string name="set_discord_support_sub">Discord コミュニティに参加してください</string>
-    <string name="set_more_apps_sub">Telegram で @MaterialYouApp に参加してください</string>
+    <string name="set_more_apps_sub">Telegram で @eurtXacro に参加してください</string>
     <string name="toast_no_browser_tg">互換性のあるブラウザまたは Telegram アプリが利用できません</string>
     <string name="toast_no_browser">対応するブラウザがありません</string>
     <string name="toast_no_browser_plain">使用できるブラウザがありません</string>

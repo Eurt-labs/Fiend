@@ -15,7 +15,7 @@ If you discover a security vulnerability in Fiend, please report it privately ra
 
 ### How to Report
 * Reach out privately to the maintainers on Telegram:
-  * Channel: https://t.me/clashprojects
+  * Channel: https://t.me/Eurt-labs
   * Discussion Group: https://t.me/clashdiscussion
 * Alternatively, submit a private security advisory through the GitHub repository.
 * Include:

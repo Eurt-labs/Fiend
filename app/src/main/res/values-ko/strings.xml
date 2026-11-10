@@ -816,10 +816,10 @@
     <string name="set_discord_title">불일치의 풍부한 존재</string>
     <string name="set_discord_on">켜짐 • 트랙, 품질, 커버가 Discord 프로필에 표시됩니다.</string>
     <string name="set_discord_off">꺼짐 • Fiend이(가) Discord 프로필에서 제외됩니다.</string>
-    <string name="set_tg_sub">텔레그램에서 @clashprojects에 가입하세요</string>
+    <string name="set_tg_sub">텔레그램에서 @fiend_music에 가입하세요</string>
     <string name="set_discord_support">불일치 지원</string>
     <string name="set_discord_support_sub">Discord 커뮤니티에 참여하세요</string>
-    <string name="set_more_apps_sub">텔레그램에서 @MaterialYouApp에 가입하세요</string>
+    <string name="set_more_apps_sub">텔레그램에서 @eurtXacro에 가입하세요</string>
     <string name="toast_no_browser_tg">호환되는 브라우저나 Telegram 앱을 사용할 수 없습니다.</string>
     <string name="toast_no_browser">호환되는 브라우저가 없습니다.</string>
     <string name="toast_no_browser_plain">사용할 수 있는 브라우저가 없습니다.</string>

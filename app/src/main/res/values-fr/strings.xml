@@ -823,10 +823,10 @@
     <string name="set_discord_title">Présence riche en discorde</string>
     <string name="set_discord_on">Sur • votre titre, qualité et couverture diffusés sur votre profil Discord</string>
     <string name="set_discord_off">Désactivé • Fiend reste hors de votre profil Discord</string>
-    <string name="set_tg_sub">Rejoignez @clashprojects sur Telegram</string>
+    <string name="set_tg_sub">Rejoignez @fiend_music sur Telegram</string>
     <string name="set_discord_support">Prise en charge de Discorde</string>
     <string name="set_discord_support_sub">Rejoignez notre communauté Discord</string>
-    <string name="set_more_apps_sub">Rejoignez @MaterialYouApp sur Telegram</string>
+    <string name="set_more_apps_sub">Rejoignez @eurtXacro sur Telegram</string>
     <string name="toast_no_browser_tg">Aucun navigateur ou application Telegram compatible n\'est disponible</string>
     <string name="toast_no_browser">Aucun navigateur compatible n\'est disponible</string>
     <string name="toast_no_browser_plain">Aucun navigateur n\'est disponible</string>

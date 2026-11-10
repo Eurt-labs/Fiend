@@ -1373,9 +1373,9 @@ object SettingsSearchIndex {
                 SettingsEntry(
                     id = "about.telegram_support",
                     title = "Telegram Updates & Support",
-                    subtitle = "Join @clashprojects on Telegram for app news, beta builds, and support",
+                    subtitle = "Join @fiend_music on Telegram for app news, beta builds, and support",
                     keywords = listOf(
-                        "telegram", "support", "community", "chat", "clashprojects", "help",
+                        "telegram", "support", "community", "chat", "fiend_music", "help",
                         "updates channel", "news"
                     ),
                     icon = Icons.AutoMirrored.Filled.Send,
@@ -1406,7 +1406,7 @@ object SettingsSearchIndex {
                 SettingsEntry(
                     id = "about.more_apps",
                     title = "More Apps from Clash Projects",
-                    subtitle = "Join @MaterialYouApp on Telegram to discover other applications",
+                    subtitle = "Join @eurtXacro on Telegram to discover other applications",
                     keywords = listOf(
                         "more apps", "material you app", "other apps", "clash projects", "developer"
                     ),

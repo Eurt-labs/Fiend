@@ -6,6 +6,7 @@ plugins {
 android {
     namespace = "com.decent.usbaudio"
     compileSdk = 36
+    ndkVersion = "27.1.12297006"
 
     defaultConfig {
         minSdk = (project.findProperty("minSdk") as? String)?.toIntOrNull() ?: 29

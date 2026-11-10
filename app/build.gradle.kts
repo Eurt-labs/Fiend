@@ -14,6 +14,7 @@ plugins {
 android {
     namespace = "com.fiend.music"
     compileSdk = 37
+    ndkVersion = "27.1.12297006"
 
     val localProps = Properties().apply {
         val localPropsFile = rootProject.file("local.properties")
@@ -71,8 +72,8 @@ android {
         buildConfigField("boolean", "VIVO_ORIGIN", vivoOrigin.toString())
         minSdk = (project.findProperty("minSdk") as? String)?.toIntOrNull() ?: 29
         targetSdk = 35
-        versionCode = 30
-        versionName = "5.1.2"
+        versionCode = 210
+        versionName = "2.1.0"
 
         (project.findProperty("targetAbis") as? String)?.let { prop ->
             ndk {
